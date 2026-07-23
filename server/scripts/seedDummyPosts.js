@@ -50,6 +50,29 @@ const sportsTitles = [
   "When Stadium Naming Rights Actually Pay Off for Sponsors"
 ];
 
+const financeTitles = [
+  "How to Rebalance Your Portfolio Before the Next Rate Cut",
+  "The Rise of Robo-Advisors: Should You Trust an Algorithm?",
+  "Are Target-Date Funds Actually Costing You Money?",
+  "The Truth About Credit Repair Services",
+  "Navigating the New Tax Brackets for 2027",
+  "Why Your Auto Insurance Rates Are Spiking Again",
+  "The Hidden Costs of 0% Financing Offers",
+  "Is It Finally Time to Buy a Hybrid Vehicle?",
+  "The Beginner's Guide to Series I Savings Bonds",
+  "How to Negotiate a Medical Bill Down to Zero",
+  "The Ultimate Guide to Travel Rewards Credit Cards",
+  "When to Start Taking Social Security Benefits",
+  "The Psychological Toll of Carrying High-Interest Debt",
+  "Why Millennials Are Flocking to High-Yield Savings",
+  "The Mechanics of a Backdoor Roth IRA Explained",
+  "Is Fractional Real Estate Investing Worth the Hype?",
+  "How Inflation Is Affecting Your Grocery Bill",
+  "The Best Way to Handle an Unexpected Windfall",
+  "Understanding the Fine Print on Life Insurance Policies",
+  "How to Prepare Your Finances for a Potential Recession"
+];
+
 const generateExcerpt = (title) => {
   return `An in-depth look at ${title.toLowerCase().replace(/[^a-z0-9 ]/g, '')}. We break down the latest trends and data so you can make the best financial decisions for your future.`;
 };
@@ -75,6 +98,79 @@ const generateBody = (title) => {
         type: "paragraph",
         data: {
           text: "While traditional wisdom often points in one direction, recent macroeconomic indicators suggest a different reality. Many consumers are discovering that optimizing their approach can yield substantial long-term benefits without requiring dramatic lifestyle changes."
+        }
+      },
+      {
+        type: "paragraph",
+        data: {
+          text: "In conclusion, staying informed and proactively managing your financial portfolio is more crucial than ever. Always consult with a certified financial planner before making major adjustments."
+        }
+      }
+    ],
+    version: "2.30.7"
+  };
+};
+
+const generateLongBody = (title) => {
+  return {
+    time: Date.now(),
+    blocks: [
+      {
+        type: "paragraph",
+        data: {
+          text: `Welcome to our comprehensive deep-dive on <b>${title}</b>. Over the past 18 months, our financial analysts have tracked significant shifts in consumer behavior and market dynamics that demand a closer look.`
+        }
+      },
+      {
+        type: "header",
+        data: {
+          text: "What the Latest Data Reveals",
+          level: 2
+        }
+      },
+      {
+        type: "paragraph",
+        data: {
+          text: "While traditional wisdom often points in one direction, recent macroeconomic indicators suggest a different reality. Many consumers are discovering that optimizing their approach can yield substantial long-term benefits without requiring dramatic lifestyle changes. The shift in global monetary policy, combined with domestic economic pressures, has created a unique environment for investors."
+        }
+      },
+      {
+        type: "quote",
+        data: {
+          text: "The direction of travel is clear, and the timing and pace of adjustments will depend on incoming data, the evolving outlook, and the balance of risks.",
+          caption: "Federal Reserve Chairman",
+          alignment: "left"
+        }
+      },
+      {
+        type: "paragraph",
+        data: {
+          text: "The remarks effectively lock in a strategic pivot for the coming quarter, marking the end of the most aggressive inflation-fighting campaign since the Volcker era of the early 1980s. Markets reacted instantly, with the S&P 500 surging and Treasury yields tumbling across the curve."
+        }
+      },
+      {
+        type: "header",
+        data: {
+          text: "The Labor Market Calculus",
+          level: 2
+        }
+      },
+      {
+        type: "paragraph",
+        data: {
+          text: "The pivot comes after last month's jobs report showed the unemployment rate ticking up slightly, triggering historically reliable recession indicators. While analysts pushed back against imminent recession fears, they acknowledged the labor market is no longer a source of inflationary pressure."
+        }
+      },
+      {
+        type: "list",
+        data: {
+          style: "unordered",
+          items: [
+            "JPMorgan readies massive restructuring in asset management.",
+            "Why the tech rally might actually be underpriced.",
+            "Commercial real estate's quiet capitulation.",
+            "The family office exodus to alternative assets."
+          ]
         }
       },
       {
@@ -150,6 +246,30 @@ async function seedDummyPosts() {
         editorsPick: i < 8,
         readTime: Math.floor(Math.random() * 5) + 3
       });
+    }
+
+    // ADD FINANCE POSTS
+    const financeVertical = verticals.find(v => v.slug === 'finance' || v.name.toLowerCase() === 'finance');
+    if (financeVertical) {
+      for (let i = 0; i < financeTitles.length; i++) {
+        const title = financeTitles[i];
+        const publishDate = new Date();
+        publishDate.setDate(publishDate.getDate() - Math.floor(Math.random() * 30));
+        
+        postsToCreate.push({
+          title,
+          excerpt: generateExcerpt(title),
+          bannerImage: `https://picsum.photos/seed/finance${i}/1200/675`,
+          body: i < 7 ? generateLongBody(title) : generateBody(title),
+          author: admin._id,
+          status: 'published',
+          publishDate,
+          vertical: financeVertical._id,
+          isDummySeed: true,
+          editorsPick: i % 4 === 0,
+          readTime: i < 7 ? 8 : Math.floor(Math.random() * 5) + 3
+        });
+      }
     }
 
     await Post.insertMany(postsToCreate);

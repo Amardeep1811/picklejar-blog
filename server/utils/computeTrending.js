@@ -12,10 +12,25 @@ export const computeTrending = async () => {
       { $match: { timestamp: { $gte: fortyEightHoursAgo } } },
       { $group: { _id: '$post', viewCount: { $sum: 1 } } },
       { $sort: { viewCount: -1 } },
-      { $limit: 3 }
+      { $limit: 10 } // Get more in case some are deleted
     ]);
 
-    let trendingPostIds = trendingViews.map(tv => tv._id);
+    let trendingPostIds = [];
+    
+    // Verify posts still exist
+    if (trendingViews.length > 0) {
+      const viewIds = trendingViews.map(tv => tv._id);
+      const existingPosts = await Post.find({ _id: { $in: viewIds }, status: 'published' }).select('_id');
+      const existingPostIdsStr = existingPosts.map(p => p._id.toString());
+      
+      // Preserve the sorted order from aggregation
+      for (const tv of trendingViews) {
+        if (existingPostIdsStr.includes(tv._id.toString())) {
+          trendingPostIds.push(tv._id);
+          if (trendingPostIds.length === 3) break;
+        }
+      }
+    }
 
     // If less than 3, fallback to newest published posts
     if (trendingPostIds.length < 3) {

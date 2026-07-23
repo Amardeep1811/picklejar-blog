@@ -64,30 +64,31 @@ export default function TwoColumnFeaturedSection() {
           <div className="w-full lg:w-1/2 flex flex-col lg:pr-12 lg:border-r border-[var(--line)]">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-1.5 h-4 bg-[var(--green)]"></div>
-              <h2 className="text-sm font-black tracking-widest text-[var(--ink)] uppercase">{verticalA.name}</h2>
+              <h2 className="text-lg font-bold tracking-widest text-[var(--ink)] uppercase font-sans">{verticalA.name}</h2>
             </div>
             
             <div className="flex flex-col">
               {postsA.map((post, idx) => {
                 const isFirst = idx === 0;
                 return (
-                  <Link 
-                    key={post._id} 
-                    to={`/${verticalA.slug}/${post.slug}`} 
-                    className={`group block py-5 ${idx !== 0 ? 'border-t border-[var(--line)]' : 'pt-0'}`}
-                  >
-                    {isFirst && (
-                      <div className="mb-4">
-                        {post.bannerImage ? (
-                          <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/9] object-cover" />
-                        ) : (
-                          <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 text-sm">No Image</div>
-                        )}
-                      </div>
-                    )}
-                    <PostTitle title={post.title} size={isFirst ? "medium" : "small"} className="mb-2" />
-                    <PostExcerpt excerpt={post.excerpt} size="small" />
-                  </Link>
+                  <div key={post._id} className={idx !== 0 ? 'border-t border-[var(--line)] py-2' : 'pb-2 pt-0'}>
+                    <Link 
+                      to={`/${verticalA.slug}/${post.slug}`} 
+                      className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
+                    >
+                      {isFirst && (
+                        <div className="mb-4">
+                          {post.bannerImage ? (
+                            <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/9] object-cover rounded-sm" />
+                          ) : (
+                            <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 text-sm rounded-sm">No Image</div>
+                          )}
+                        </div>
+                      )}
+                      <PostTitle title={post.title} size={isFirst ? "medium" : "small"} className="mb-2" />
+                      <PostExcerpt excerpt={post.excerpt} size="small" />
+                    </Link>
+                  </div>
                 );
               })}
             </div>
@@ -99,30 +100,31 @@ export default function TwoColumnFeaturedSection() {
           <div className="w-full lg:w-1/2 flex flex-col">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-1.5 h-4 bg-[var(--green)]"></div>
-              <h2 className="text-sm font-black tracking-widest text-[var(--ink)] uppercase">{verticalB.name}</h2>
+              <h2 className="text-lg font-bold tracking-widest text-[var(--ink)] uppercase font-sans">{verticalB.name}</h2>
             </div>
             
             <div className="flex flex-col">
               {postsB.map((post, idx) => {
                 const isSecond = idx === 1;
                 return (
-                  <Link 
-                    key={post._id} 
-                    to={`/${verticalB.slug}/${post.slug}`} 
-                    className={`group block py-5 ${idx !== 0 ? 'border-t border-[var(--line)]' : 'pt-0'}`}
-                  >
-                    {isSecond && (
-                      <div className="mb-4">
-                        {post.bannerImage ? (
-                          <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/9] object-cover" />
-                        ) : (
-                          <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 text-sm">No Image</div>
-                        )}
-                      </div>
-                    )}
-                    <PostTitle title={post.title} size={isSecond ? "medium" : "small"} className="mb-2" />
-                    <PostExcerpt excerpt={post.excerpt} size="small" />
-                  </Link>
+                  <div key={post._id} className={idx !== 0 ? 'border-t border-[var(--line)] py-2' : 'pb-2 pt-0'}>
+                    <Link 
+                      to={`/${verticalB.slug}/${post.slug}`} 
+                      className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
+                    >
+                      {isSecond && (
+                        <div className="mb-4">
+                          {post.bannerImage ? (
+                            <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/9] object-cover rounded-sm" />
+                          ) : (
+                            <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 text-sm rounded-sm">No Image</div>
+                          )}
+                        </div>
+                      )}
+                      <PostTitle title={post.title} size={isSecond ? "medium" : "small"} className="mb-2" />
+                      <PostExcerpt excerpt={post.excerpt} size="small" />
+                    </Link>
+                  </div>
                 );
               })}
             </div>

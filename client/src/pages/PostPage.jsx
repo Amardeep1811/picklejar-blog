@@ -1,23 +1,60 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import axios from '../api/axios';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EditorJsRenderer from '../components/shared/EditorJsRenderer';
-import axios from '../api/axios';
+import SectionDividerAd from '../components/ads/SectionDividerAd';
+import PostTitle from '../components/shared/Typography/PostTitle';
+import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 
 export default function PostPage() {
-  const { slug } = useParams();
+  const { postSlug } = useParams();
   const [data, setData] = useState(null);
+  const [relatedPosts, setRelatedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  const sidebarRef = useRef(null);
+  const [sidebarTop, setSidebarTop] = useState(96); // 96px = 6rem = top-24
+
+  useEffect(() => {
+    if (!sidebarRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const height = entry.target.offsetHeight;
+        const vh = window.innerHeight;
+        // If sidebar is taller than available viewport space, stick to bottom
+        if (height > vh - 96 - 24) {
+          setSidebarTop(vh - height - 24);
+        } else {
+          setSidebarTop(96);
+        }
+      }
+    });
+    observer.observe(sidebarRef.current);
+    return () => observer.disconnect();
+  }, [sidebarRef.current]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const targetSlug = slug || 'test-slug';
+        const targetSlug = postSlug;
+        if (!targetSlug) throw new Error("Post slug is missing.");
+        
         const res = await axios.get(`/posts/${targetSlug}`);
         if (res.data.success) {
-          setData(res.data.data);
+          const post = res.data.data;
+          setData(post);
+          
+          if (post.vertical) {
+            // Fetch related posts (same vertical, up to 10 to ensure we have enough after excluding current)
+            const relRes = await axios.get(`/posts?status=published&vertical=${post.vertical._id}&limit=10`);
+            if (relRes.data.success) {
+              const filtered = relRes.data.data.filter(p => p._id !== post._id);
+              setRelatedPosts(filtered);
+            }
+          }
         }
       } catch (err) {
         setError(err.response?.data?.message || err.message || 'Failed to fetch post');
@@ -26,35 +63,180 @@ export default function PostPage() {
       }
     };
     fetchData();
-  }, [slug]);
+  }, [postSlug]);
+
+  if (loading) return <LoadingSpinner />;
+  
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="bg-red-50 text-red-500 p-6 rounded-lg text-center">{error}</div>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  // Split related posts into sidebar (max 4) and bottom grid (remaining up to 4)
+  const sidebarPosts = relatedPosts.slice(0, 4);
+  const morePosts = relatedPosts.slice(4, 8);
+
+  const formattedDate = new Date(data.publishDate || data.createdAt).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {loading ? (
-        <LoadingSpinner />
-      ) : error ? (
-        <div className="error-message text-red-500 p-4 border border-red-500 rounded bg-red-50">{error}</div>
-      ) : data ? (
-        <article>
-          {data.bannerImage && (
-            <img 
-              src={data.bannerImage} 
-              alt="Banner" 
-              className="w-full h-64 md:h-96 object-cover rounded-lg mb-8" 
-            />
-          )}
-          <h1 className="text-4xl font-bold mb-4">{data.title}</h1>
-          {data.excerpt && <p className="text-xl text-gray-600 mb-8 italic">{data.excerpt}</p>}
+    <div className="bg-[#fcfbf9] min-h-screen pb-20">
+      
+      {/* HEADER AREA */}
+      <div className="max-w-4xl mx-auto px-6 pt-16 pb-10 text-center flex flex-col items-center">
+        {data.vertical && (
+          <Link to={`/${data.vertical.slug}`} className="inline-block border border-[var(--gold)] text-[var(--gold)] text-xs font-bold tracking-widest uppercase px-3 py-1 mb-6 hover:bg-[var(--gold)] hover:text-white transition-colors">
+            {data.vertical.name}
+          </Link>
+        )}
+        
+        <h1 className="text-5xl md:text-6xl lg:text-[4rem] leading-[1.1] font-bold font-['Playfair_Display'] text-[var(--ink)] mb-6 max-w-3xl">
+          {data.title}
+        </h1>
+        
+        {data.excerpt && (
+          <p className="text-xl md:text-2xl text-gray-600 italic font-serif max-w-2xl mb-12">
+            {data.excerpt}
+          </p>
+        )}
+        
+        <div className="w-full border-t border-b border-gray-300 py-4 flex flex-col md:flex-row justify-between items-center text-xs font-bold tracking-widest text-gray-500 uppercase font-sans gap-4 md:gap-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[var(--ink)] text-white flex items-center justify-center text-lg">
+              {data.author?.name ? data.author.name.charAt(0) : 'A'}
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-[var(--ink)]">{data.author?.name || 'Editorial Team'}</span>
+              <span className="text-[10px] tracking-wider font-normal">Correspondent</span>
+            </div>
+          </div>
           
-          <div className="mt-8 text-lg text-gray-800">
+          <div className="flex items-center gap-6">
+            <span>{formattedDate}</span>
+            <span>{data.readTime || 5} MIN READ</span>
+          </div>
+        </div>
+      </div>
+
+      {/* BANNER IMAGE */}
+      {data.bannerImage && (
+        <div className="max-w-6xl mx-auto px-6 mb-12">
+          <img 
+            src={data.bannerImage} 
+            alt={data.title} 
+            className="w-full aspect-[21/9] object-cover object-center" 
+          />
+        </div>
+      )}
+
+      {/* TWO COLUMN LAYOUT: ARTICLE + SIDEBAR */}
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16">
+        
+        {/* ARTICLE BODY */}
+        <article className="lg:col-span-8 lg:pr-8">
+          <div className="
+            text-lg md:text-xl font-serif text-gray-800 leading-relaxed
+            [&_p]:mb-6
+            [&_h2]:font-sans [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:uppercase [&_h2]:tracking-wider
+            [&_h3]:font-sans [&_h3]:font-bold [&_h3]:text-xl [&_h3]:mt-8 [&_h3]:mb-4
+            [&_blockquote]:border-l-[4px] [&_blockquote]:border-[var(--gold)] [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:my-8 [&_blockquote]:text-2xl [&_blockquote]:italic [&_blockquote]:text-[var(--ink)]
+            [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul>li]:mb-2
+            [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol>li]:mb-2
+          ">
             {data.body && data.body.blocks ? (
               <EditorJsRenderer blocks={data.body.blocks} />
             ) : (
-              <p>No content available.</p>
+              <p>No content available for this post.</p>
             )}
           </div>
         </article>
-      ) : null}
+
+        {/* RIGHT SIDEBAR (STICKY) */}
+        <aside className="lg:col-span-4 relative">
+          <div 
+            ref={sidebarRef} 
+            className="sticky flex flex-col gap-12"
+            style={{ top: sidebarTop }}
+          >
+            
+            {/* AD WIDGET */}
+            <div className="w-full bg-white flex justify-center py-4 border border-gray-200">
+              <SectionDividerAd />
+            </div>
+
+            {/* RELATED POSTS WIDGET */}
+            {sidebarPosts.length > 0 && (
+              <div className="bg-white p-6 border border-gray-200">
+                <div className="flex items-center gap-2 mb-6">
+                  <h3 className="text-sm font-bold tracking-widest text-[var(--ink)] uppercase font-sans">
+                    Most Read Today
+                  </h3>
+                </div>
+                
+                <div className="flex flex-col gap-5">
+                  {sidebarPosts.map((post, index) => (
+                    <Link 
+                      key={post._id} 
+                      to={`/${data.vertical?.slug || 'vertical'}/${post.slug}`} 
+                      className="group flex gap-4 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-2 -mx-2"
+                    >
+                      <span className="text-[var(--gold)] font-bold text-lg font-serif leading-none mt-1">
+                        {index + 1}.
+                      </span>
+                      <h4 className="text-sm font-bold font-serif leading-snug group-hover:text-[var(--green)] transition-colors">
+                        {post.title}
+                      </h4>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+          </div>
+        </aside>
+
+      </div>
+
+      {/* BELOW ARTICLE: MORE FROM VERTICAL */}
+      {morePosts.length > 0 && (
+        <div className="max-w-6xl mx-auto px-6 mt-20 pt-16 border-t-[3px] border-[var(--ink)]">
+          <div className="flex items-center gap-2 mb-8 justify-center">
+            <div className="w-1.5 h-4 bg-[var(--green)]"></div>
+            <h2 className="text-xl font-bold tracking-widest text-[var(--ink)] uppercase font-sans">
+              More From {data.vertical?.name || 'This Section'}
+            </h2>
+            <div className="w-1.5 h-4 bg-[var(--green)]"></div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {morePosts.map(post => (
+              <Link 
+                key={post._id} 
+                to={`/${data.vertical?.slug || 'vertical'}/${post.slug}`} 
+                className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -my-4"
+              >
+                {post.bannerImage ? (
+                  <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-4 rounded-sm" />
+                ) : (
+                  <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-4 flex items-center justify-center text-gray-400 text-xs rounded-sm">No Image</div>
+                )}
+                <div className="flex flex-col flex-1">
+                  <PostTitle title={post.title} size="small" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

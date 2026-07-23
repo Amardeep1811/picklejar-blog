@@ -68,8 +68,8 @@ export default function Navbar() {
           {verticals.map(v => (
             <Link 
               key={v._id} 
-              to={`/vertical/${v.slug}`}
-              className="relative group py-1 transition-colors duration-300 opacity-85 hover:opacity-100 hover:text-[var(--green)]"
+              to={`/${v.slug}`}
+              className="relative group py-1 uppercase text-[#f2eee2]"
             >
               {v.name}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--green)] transition-all duration-300 group-hover:w-full"></span>
@@ -117,8 +117,8 @@ export default function Navbar() {
             {verticals.map(v => (
               <Link 
                 key={v._id} 
-                to={`/vertical/${v.slug}`}
-                className="hover:text-white transition-colors"
+                to={`/${v.slug}`}
+                className="uppercase text-[#f2eee2]"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {v.name}

@@ -68,31 +68,36 @@ export default function Sidebar() {
       {/* 1. Sponsored Card */}
       <div>
         <div className="text-[10px] tracking-wider text-[var(--gray)] mb-2 font-semibold">SPONSORED</div>
-        {sponsoredAd ? (
-          <a href={sponsoredAd.ctaUrl} target="_blank" rel="noreferrer" className={adStyles}>
-            {sponsoredAd.image ? (
-              <img src={sponsoredAd.image} alt="Sponsored" className="w-full h-[250px] object-cover mb-4 bg-gray-200" />
-            ) : (
-              <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400 mb-4">No Image</div>
-            )}
-            <div className="bg-[var(--green)] text-white text-center py-2 text-sm font-bold opacity-90 group-hover:opacity-100 transition-opacity">
-              {sponsoredAd.ctaText || 'Learn More'}
+        <div className="w-full bg-[var(--bg-2)] border border-[var(--line)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md group">
+          {sponsoredAd ? (
+            <a href={sponsoredAd.ctaUrl} target="_blank" rel="noreferrer" className="block w-full h-full">
+              {sponsoredAd.image ? (
+                <img src={sponsoredAd.image} alt="Sponsored" className="w-full h-[250px] object-cover bg-gray-200" />
+              ) : (
+                <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
+              )}
+              <div className="bg-[var(--green)] text-white text-center py-2 text-sm font-bold opacity-90 group-hover:opacity-100 transition-opacity">
+                {sponsoredAd.ctaText || 'Learn More'}
+              </div>
+            </a>
+          ) : (
+            <div className="block w-full h-full p-4">
+              <div className="w-full h-[218px] border-2 border-dashed border-[var(--gray-2)] flex flex-col items-center justify-center text-[var(--gray-2)] bg-[var(--bg)]">
+                <span className="font-bold text-lg">SPONSORED</span>
+                <span className="text-sm">300 &times; 250</span>
+              </div>
+              <div className="py-2 text-sm font-bold text-transparent text-center bg-transparent">
+                Placeholder
+              </div>
             </div>
-          </a>
-        ) : (
-          <div className={adStyles}>
-            <div className="w-full h-[250px] border-2 border-dashed border-[var(--gray-2)] flex flex-col items-center justify-center text-[var(--gray-2)] bg-[var(--bg)]">
-              <span className="font-bold text-lg">SPONSORED</span>
-              <span className="text-sm">300 &times; 250</span>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 2. Trending Petitions */}
       {petitions.length > 0 && (
         <div className="bg-white border-t-[3px] border-t-[var(--green)] border border-[var(--line)] rounded-sm py-4 px-5 shadow-sm">
-          <div className="text-[11px] font-bold tracking-widest text-[var(--green)] mb-4">TRENDING PETITIONS</div>
+          <div className="text-lg font-bold tracking-widest text-[var(--green)] mb-4 uppercase font-sans">TRENDING PETITIONS</div>
           <div className="flex flex-col">
             {petitions.map(petition => {
               const progress = Math.min(100, Math.round((petition.signatureCount / petition.goalCount) * 100)) || 0;
@@ -101,9 +106,7 @@ export default function Sidebar() {
                   <div className="text-[10px] tracking-[1px] text-[var(--gray-2)] font-bold mb-1 uppercase">
                     {petition.category} &middot; {formatK(petition.signatureCount)} SIGNATURES
                   </div>
-                  <h4 className="font-['Playfair_Display'] font-bold text-[16px] leading-snug mb-3 text-[var(--ink)] group-hover:text-[var(--green-dark)] transition-colors">
-                    {petition.title}
-                  </h4>
+                  <PostTitle title={petition.title} size="headline" className="mb-3" />
                   <div className="w-full h-1.5 bg-[var(--tan)] rounded-full overflow-hidden mb-1.5">
                     <div 
                       className="h-full bg-[var(--green)] rounded-full transition-all duration-1000"
@@ -124,25 +127,30 @@ export default function Sidebar() {
       {/* 4. Banner Ad */}
       <div>
         <div className="text-[10px] tracking-wider text-[var(--gray)] mb-2 font-semibold">ADVERTISEMENT</div>
-        {bannerAd ? (
-          <a href={bannerAd.ctaUrl} target="_blank" rel="noreferrer" className={adStyles}>
-            {bannerAd.image ? (
-              <img src={bannerAd.image} alt="Advertisement" className="w-full h-[250px] object-cover mb-4 bg-gray-200" />
-            ) : (
-              <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400 mb-4">No Image</div>
-            )}
-            <div className="bg-[var(--ink)] text-white text-center py-2 text-sm font-bold opacity-90 group-hover:opacity-100 transition-opacity">
-              {bannerAd.ctaText || 'Learn More'}
+        <div className="w-full bg-[var(--bg-2)] border border-[var(--line)] transition-all duration-300 hover:-translate-y-1 hover:shadow-md group">
+          {bannerAd ? (
+            <a href={bannerAd.ctaUrl} target="_blank" rel="noreferrer" className="block w-full h-full">
+              {bannerAd.image ? (
+                <img src={bannerAd.image} alt="Advertisement" className="w-full h-[250px] object-cover bg-gray-200" />
+              ) : (
+                <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
+              )}
+              <div className="bg-[var(--ink)] text-white text-center py-2 text-sm font-bold opacity-90 group-hover:opacity-100 transition-opacity">
+                {bannerAd.ctaText || 'Learn More'}
+              </div>
+            </a>
+          ) : (
+            <div className="block w-full h-full p-4">
+              <div className="w-full h-[218px] border-2 border-dashed border-[var(--gray-2)] flex flex-col items-center justify-center text-[var(--gray-2)] bg-[var(--bg)]">
+                <span className="font-bold text-lg">ADVERTISEMENT</span>
+                <span className="text-sm">300 &times; 250</span>
+              </div>
+              <div className="py-2 text-sm font-bold text-transparent text-center bg-transparent">
+                Placeholder
+              </div>
             </div>
-          </a>
-        ) : (
-          <div className={adStyles}>
-            <div className="w-full h-[250px] border-2 border-dashed border-[var(--gray-2)] flex flex-col items-center justify-center text-[var(--gray-2)] bg-[var(--bg)]">
-              <span className="font-bold text-lg">ADVERTISEMENT</span>
-              <span className="text-sm">300 &times; 250</span>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 5. Newsletter */}

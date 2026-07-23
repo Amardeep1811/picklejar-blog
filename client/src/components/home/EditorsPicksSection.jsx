@@ -47,7 +47,7 @@ export default function EditorsPicksSection() {
     <section className="mb-12 font-['Inter']">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-1.5 h-4 bg-[var(--green)]"></div>
-        <h2 className="text-sm font-black tracking-widest text-[var(--ink)] uppercase">Editor's Picks</h2>
+        <h2 className="text-lg font-bold tracking-widest text-[var(--ink)] uppercase font-sans">Editor's Picks</h2>
       </div>
 
       <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">
@@ -55,7 +55,7 @@ export default function EditorsPicksSection() {
         {/* LEFT COLUMN: 65% Width */}
         <div className="w-full lg:w-[65%] flex flex-col lg:pr-6 pb-6 lg:pb-0 lg:border-r border-[var(--line)]">
           {largePost && (
-            <Link to={`/${largePost.vertical?.slug || 'vertical'}/${largePost.slug}`} className="group flex flex-col md:flex-row gap-6 mb-6">
+            <Link to={`/${largePost.vertical?.slug || 'vertical'}/${largePost.slug}`} className="group flex flex-col md:flex-row gap-6 mb-6 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -mt-4">
               {/* TEXT COLUMN */}
               <div className="w-full md:w-[45%] flex flex-col justify-start">
                 <PostTitle title={largePost.title} size="hero" className="mb-3 text-3xl leading-tight" />
@@ -79,7 +79,7 @@ export default function EditorsPicksSection() {
             <div className="pt-6 border-t border-[var(--line)]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {mediumPosts.map(post => (
-                  <Link key={post._id} to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`} className="group block">
+                  <Link key={post._id} to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`} className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3">
                     <div className="flex gap-4">
                       <div className="w-[120px] shrink-0">
                         {post.bannerImage ? (
@@ -107,7 +107,7 @@ export default function EditorsPicksSection() {
           {gridPosts.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
               {gridPosts.map((post, idx) => (
-                <Link key={post._id} to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`} className="group flex flex-col h-full">
+                <Link key={post._id} to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`} className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3">
                   {post.bannerImage ? (
                     <img src={post.bannerImage} alt={post.title} className="w-full aspect-video object-cover mb-3" />
                   ) : (

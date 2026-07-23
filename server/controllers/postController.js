@@ -19,6 +19,9 @@ export const getPosts = asyncHandler(async (req, res) => {
   if (req.query.limit) {
     query = query.limit(parseInt(req.query.limit, 10));
   }
+  if (req.query.skip) {
+    query = query.skip(parseInt(req.query.skip, 10));
+  }
   
   const posts = await query;
   res.status(200).json({ success: true, data: posts });

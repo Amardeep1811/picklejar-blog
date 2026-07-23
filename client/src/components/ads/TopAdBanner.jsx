@@ -18,27 +18,25 @@ export default function TopAdBanner() {
     fetchAd();
   }, []);
 
-  if (!ad) {
-    return (
-      <div className="w-full bg-black flex justify-center py-4 border-b border-black">
-        <div className="w-full max-w-[970px] h-[150px] border border-[#333] flex items-center justify-center text-gray-400 bg-[#111]">
-          <span className="font-bold text-sm tracking-widest uppercase">AD SPACE — 970×150</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full bg-[#82c6b4] flex justify-center">
-      <a href={ad.ctaUrl || '#'} target="_blank" rel="noreferrer" className="block w-full max-w-[1200px]">
-        {ad.image ? (
-          <img src={ad.image} alt={ad.ctaText || 'Advertisement'} className="w-full h-auto max-h-[150px] object-cover" />
+    <div className="w-full bg-[var(--bg-2)] flex justify-center py-4 border-b border-[var(--line)]">
+      <div className="w-full max-w-[970px] h-[150px]">
+        {ad ? (
+          <a href={ad.ctaUrl || '#'} target="_blank" rel="noreferrer" className="block w-full h-full">
+            {ad.image ? (
+              <img src={ad.image} alt={ad.ctaText || 'Advertisement'} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-[#82c6b4] flex items-center justify-center text-white font-bold text-lg">
+                {ad.ctaText || 'Advertisement'}
+              </div>
+            )}
+          </a>
         ) : (
-          <div className="w-full py-6 text-center text-white font-bold text-lg">
-            {ad.ctaText || 'Advertisement'}
+          <div className="w-full h-full border-2 border-dashed border-[var(--gray-2)] flex items-center justify-center text-[var(--gray-2)] bg-[var(--bg)]">
+            <span className="font-bold text-sm tracking-widest uppercase">AD SPACE — 970×150</span>
           </div>
         )}
-      </a>
+      </div>
     </div>
   );
 }

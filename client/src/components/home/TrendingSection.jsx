@@ -55,7 +55,7 @@ export default function TrendingSection() {
   if (error) {
     return (
       <section className="mb-12 border-t-[3px] border-[var(--green)] pt-4 font-['Inter']">
-        <h2 className="text-[11px] font-bold tracking-widest text-[var(--green)] mb-6">TRENDING</h2>
+        <h2 className="text-lg font-bold tracking-widest text-[var(--green)] mb-6 uppercase font-sans">TRENDING</h2>
         <div className="bg-red-50 text-red-500 p-4 rounded-md">
           {error}
         </div>
@@ -71,13 +71,13 @@ export default function TrendingSection() {
 
   return (
     <section className="mb-12 font-['Inter']">
-      <h2 className="text-sm font-black tracking-[0.15em] text-[var(--green)] mb-4 uppercase">TRENDING</h2>
+      <h2 className="text-lg font-bold tracking-widest text-[var(--green)] uppercase font-sans">TRENDING</h2>
 
-      <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">
+      <div className="flex flex-col lg:flex-row items-stretch gap-6 border-t border-[var(--line)] pt-8">
 
         {/* LEFT COLUMN: 50% Hero */}
         <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--line)] lg:pr-6 pb-6 lg:pb-0">
-          <Link to={`/${topPost.vertical?.slug || 'vertical'}/${topPost.slug}`} className="group block cursor-pointer">
+          <Link to={`/${topPost.vertical?.slug || 'vertical'}/${topPost.slug}`} className="group block cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -mt-4">
             {topPost.bannerImage ? (
               <img src={topPost.bannerImage} alt={topPost.title} className="w-full h-[280px] lg:h-[320px] object-cover mb-5 rounded-md" />
             ) : (
@@ -95,7 +95,8 @@ export default function TrendingSection() {
 
         {/* MIDDLE COLUMN: 25% #2 and #3 Trending */}
         <div className="w-full lg:w-1/4 flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--line)] lg:pr-6 pb-6 lg:pb-0">
-          <Link to={`/${midTopPost.vertical?.slug || 'vertical'}/${midTopPost.slug}`} className="group block cursor-pointer border-b border-[var(--line)] pb-6 mb-6">
+          <div className="border-b border-[var(--line)] pb-6 mb-6">
+            <Link to={`/${midTopPost.vertical?.slug || 'vertical'}/${midTopPost.slug}`} className="group block cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -mt-3">
             {midTopPost.bannerImage ? (
               <img src={midTopPost.bannerImage} alt={midTopPost.title} className="w-full aspect-video object-cover mb-4 rounded-md" />
             ) : (
@@ -108,9 +109,11 @@ export default function TrendingSection() {
             </div>
             <PostTitle title={midTopPost.title} size="medium" className="mb-2" />
             <PostExcerpt excerpt={midTopPost.excerpt} size="small" />
-          </Link>
+            </Link>
+          </div>
 
-          <Link to={`/${midBottomPost.vertical?.slug || 'vertical'}/${midBottomPost.slug}`} className="group block cursor-pointer">
+          <div className="pb-6">
+            <Link to={`/${midBottomPost.vertical?.slug || 'vertical'}/${midBottomPost.slug}`} className="group block cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3">
             <div className="mb-2">
               <span className="inline-block bg-[var(--green)] text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase">
                 {midBottomPost.vertical?.name || 'Category'}
@@ -118,23 +121,42 @@ export default function TrendingSection() {
             </div>
             <PostTitle title={midBottomPost.title} size="medium" className="mb-2" />
             <PostExcerpt excerpt={midBottomPost.excerpt} size="small" />
-          </Link>
+            </Link>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: 25% The Latest & Ad */}
         <div className="w-full lg:w-1/4 flex flex-col">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="h-8 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--red)]"></span>
-            <h2 className="text-xs font-bold tracking-widest text-[var(--red)] uppercase">THE LATEST</h2>
+            <h2 className="text-lg font-bold tracking-widest text-[var(--red)] uppercase font-sans">THE LATEST</h2>
           </div>
-
+          
           <div className="flex flex-col">
-            {latestPosts.map((post, idx) => (
-              <Link
-                key={post._id}
-                to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`}
-                className={`group block py-4 ${idx !== 0 ? 'border-t border-[var(--line)]' : 'pt-2'}`}
-              >
+            {latestPosts.length > 0 && (
+              <div className="pb-6 pt-2">
+                <Link
+                  key={latestPosts[0]._id}
+                  to={`/${latestPosts[0].vertical?.slug || 'vertical'}/${latestPosts[0].slug}`}
+                  className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
+                >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="inline-block bg-[var(--green)] text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase">
+                    {latestPosts[0].vertical?.name || 'Category'}
+                  </span>
+                  <PostMeta date={latestPosts[0].createdAt} className="text-[var(--gray-2)] m-0" />
+                </div>
+                <PostTitle title={latestPosts[0].title} size="headline" />
+                </Link>
+              </div>
+            )}
+
+            {latestPosts.slice(1).map((post, idx) => (
+              <div key={post._id} className="border-t border-[var(--line)] py-6">
+                <Link
+                  to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`}
+                  className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
+                >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="inline-block bg-[var(--green)] text-white px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase">
                     {post.vertical?.name || 'Category'}
@@ -142,10 +164,10 @@ export default function TrendingSection() {
                   <PostMeta date={post.createdAt} className="text-[var(--gray-2)] m-0" />
                 </div>
                 <PostTitle title={post.title} size="headline" />
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
-
 
         </div>
 
