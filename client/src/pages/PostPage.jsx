@@ -14,26 +14,7 @@ export default function PostPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const sidebarRef = useRef(null);
-  const [sidebarTop, setSidebarTop] = useState(96); // 96px = 6rem = top-24
 
-  useEffect(() => {
-    if (!sidebarRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const height = entry.target.offsetHeight;
-        const vh = window.innerHeight;
-        // If sidebar is taller than available viewport space, stick to bottom
-        if (height > vh - 96 - 24) {
-          setSidebarTop(vh - height - 24);
-        } else {
-          setSidebarTop(96);
-        }
-      }
-    });
-    observer.observe(sidebarRef.current);
-    return () => observer.disconnect();
-  }, [sidebarRef.current]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,12 +69,12 @@ export default function PostPage() {
   });
 
   return (
-    <div className="bg-[#fcfbf9] min-h-screen pb-20">
+    <div className="bg-white min-h-screen pb-20">
       
       {/* HEADER AREA */}
       <div className="max-w-4xl mx-auto px-6 pt-16 pb-10 text-center flex flex-col items-center">
         {data.vertical && (
-          <Link to={`/${data.vertical.slug}`} className="inline-block border border-[var(--gold)] text-[var(--gold)] text-xs font-bold tracking-widest uppercase px-3 py-1 mb-6 hover:bg-[var(--gold)] hover:text-white transition-colors">
+          <Link to={`/${data.vertical.slug}`} className="inline-block bg-[var(--green)] text-white px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-6 hover:bg-green-700 transition-colors">
             {data.vertical.name}
           </Link>
         )}
@@ -147,7 +128,7 @@ export default function PostPage() {
             [&_p]:mb-6
             [&_h2]:font-sans [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:uppercase [&_h2]:tracking-wider
             [&_h3]:font-sans [&_h3]:font-bold [&_h3]:text-xl [&_h3]:mt-8 [&_h3]:mb-4
-            [&_blockquote]:border-l-[4px] [&_blockquote]:border-[var(--gold)] [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:my-8 [&_blockquote]:text-2xl [&_blockquote]:italic [&_blockquote]:text-[var(--ink)]
+            [&_blockquote]:border-l-[4px] [&_blockquote]:border-[var(--green)] [&_blockquote]:pl-6 [&_blockquote]:py-2 [&_blockquote]:my-8 [&_blockquote]:text-2xl [&_blockquote]:italic [&_blockquote]:text-[var(--ink)]
             [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul>li]:mb-2
             [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol>li]:mb-2
           ">
@@ -161,11 +142,7 @@ export default function PostPage() {
 
         {/* RIGHT SIDEBAR (STICKY) */}
         <aside className="lg:col-span-4 relative">
-          <div 
-            ref={sidebarRef} 
-            className="sticky flex flex-col gap-12"
-            style={{ top: sidebarTop }}
-          >
+          <div className="sticky top-24 flex flex-col gap-12">
             
             {/* AD WIDGET */}
             <div className="w-full bg-white flex justify-center py-4 border border-gray-200">
@@ -188,7 +165,7 @@ export default function PostPage() {
                       to={`/${data.vertical?.slug || 'vertical'}/${post.slug}`} 
                       className="group flex gap-4 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-2 -mx-2"
                     >
-                      <span className="text-[var(--gold)] font-bold text-lg font-serif leading-none mt-1">
+                      <span className="text-[var(--green)] font-bold text-lg font-serif leading-none mt-1">
                         {index + 1}.
                       </span>
                       <h4 className="text-sm font-bold font-serif leading-snug group-hover:text-[var(--green)] transition-colors">

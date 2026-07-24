@@ -172,7 +172,7 @@ export default function MoreStoriesSection() {
         <div className={`w-full ${numFeatured === 0 ? 'lg:w-[40%]' : 'lg:w-[30%]'} flex flex-col`}>
           
           {/* Ad Slot */}
-          <div className={`mb-8 ${numFeatured > 1 ? 'border-b border-[var(--line)] pb-8' : ''}`}>
+          <div className={`mb-4 ${numFeatured > 1 ? 'border-b border-[var(--line)] pb-4' : ''}`}>
             <div className="text-[10px] text-[var(--gray-2)] text-center uppercase tracking-wider mb-2">ADVERTISEMENT</div>
             <div className="w-full flex justify-center">
               {ad ? (

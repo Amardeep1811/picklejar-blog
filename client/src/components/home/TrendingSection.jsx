@@ -30,7 +30,7 @@ export default function TrendingSection() {
             const trendingIds = tPosts.map(p => p._id);
             const filteredLatest = latestRes.data.data
               .filter(p => !trendingIds.includes(p._id))
-              .slice(0, 6);
+              .slice(0, 5);
             setLatestPosts(filteredLatest);
           }
         } else {
@@ -73,7 +73,7 @@ export default function TrendingSection() {
     <section className="mb-12 font-['Inter']">
       <h2 className="text-lg font-bold tracking-widest text-[var(--green)] uppercase font-sans">TRENDING</h2>
 
-      <div className="flex flex-col lg:flex-row items-stretch gap-6 border-t border-[var(--line)] pt-8">
+      <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">
 
         {/* LEFT COLUMN: 50% Hero */}
         <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--line)] lg:pr-6 pb-6 lg:pb-0">
