@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 
 export default function Navbar() {
@@ -7,6 +7,17 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setSearchOpen(false);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
   
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -56,8 +67,9 @@ export default function Navbar() {
 
   return (
     <>
+    <div className={`sticky top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       <nav 
-        className={`sticky top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${hidden ? '-translate-y-full' : 'translate-y-0'} ${isScrolled ? 'bg-[var(--ink)]/95 backdrop-blur shadow-sm' : 'bg-[var(--ink)]'} px-6 py-4 flex justify-between items-center text-[#f2eee2]`}
+        className={`w-full ${isScrolled || searchOpen ? 'bg-[var(--ink)]/95 backdrop-blur shadow-sm' : 'bg-[var(--ink)]'} px-6 py-4 flex justify-between items-center text-[#f2eee2] relative z-20 transition-colors duration-300`}
       >
         <Link to="/" className="text-2xl font-bold font-['Playfair_Display'] tracking-tight flex items-center">
           <span className="text-[#f2eee2]">PICKLE</span>
@@ -78,10 +90,16 @@ export default function Navbar() {
         </div>
 
         <div className="hidden xl:flex items-center space-x-6">
-          <button className="text-[#f2eee2] opacity-85 hover:opacity-100 hover:text-[var(--green)] transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <button onClick={() => setSearchOpen(!searchOpen)} className="text-[#f2eee2] opacity-85 hover:opacity-100 hover:text-[var(--green)] transition-colors">
+            {searchOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            )}
           </button>
           <button className="bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 rounded-full font-semibold text-sm transition-colors">
             Subscribe
@@ -97,6 +115,34 @@ export default function Navbar() {
           </svg>
         </button>
       </nav>
+
+      {/* Search Dropdown Panel */}
+      <div className={`absolute top-full left-0 w-full bg-[#111] overflow-hidden transition-all duration-250 ease-in-out ${searchOpen ? 'max-h-96 opacity-100 py-8 px-6' : 'max-h-0 opacity-0 py-0 px-6'}`}>
+        <form onSubmit={handleSearchSubmit} className="max-w-6xl mx-auto">
+          <input 
+            type="text" 
+            className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded text-lg outline-none placeholder-gray-400 font-sans" 
+            placeholder="Search Pickle Jar" 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)} 
+          />
+          
+          <div className="mt-8">
+            <h3 className="text-white font-bold mb-4 font-sans tracking-wide">Explore Topics</h3>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/search" onClick={() => setSearchOpen(false)} className="px-3 py-1.5 border border-gray-600 rounded text-sm text-gray-300 hover:text-white hover:border-gray-400 transition-colors font-sans">
+                Latest
+              </Link>
+              {verticals.map(v => (
+                <Link key={v._id} to={`/${v.slug}`} onClick={() => setSearchOpen(false)} className="px-3 py-1.5 border border-gray-600 rounded text-sm text-gray-300 hover:text-white hover:border-gray-400 transition-colors font-sans">
+                  {v.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
 
       {/* Mobile Drawer */}
       <div className={`fixed inset-0 z-[60] flex justify-end transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
@@ -127,12 +173,12 @@ export default function Navbar() {
           </div>
           
           <div className="mt-auto pt-8 border-t border-[var(--bg-2)]/20 flex flex-col space-y-4">
-            <button className="flex items-center space-x-2 text-[var(--bg)] hover:text-white transition-colors">
+            <Link to="/search" onClick={() => setMobileMenuOpen(false)} className="flex items-center space-x-2 text-[var(--bg)] hover:text-white transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <span>Search</span>
-            </button>
+            </Link>
             <button className="bg-white text-[var(--green)] hover:bg-[var(--bg)] py-3 rounded-full font-bold text-center transition-colors">
               Subscribe
             </button>

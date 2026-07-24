@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="flex flex-col">
           <h5 className="text-[11.5px] tracking-[1.4px] text-[var(--gold)] mb-4 font-semibold">SECTIONS</h5>
           {verticals.map(v => (
-            <Link key={v._id} to={`/vertical/${v.slug}`} className="text-[14.5px] text-[#e5e2d5] mb-3 opacity-85 hover:opacity-100 hover:pl-1 hover:text-white transition-all duration-200">
+            <Link key={v._id} to={`/${v.slug}`} className="text-[14.5px] text-[#e5e2d5] mb-3 opacity-85 hover:opacity-100 hover:pl-1 hover:text-white transition-all duration-200">
               {v.name}
             </Link>
           ))}

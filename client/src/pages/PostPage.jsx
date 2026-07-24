@@ -63,6 +63,7 @@ export default function PostPage() {
   const morePosts = relatedPosts.slice(4, 8);
 
   const formattedDate = new Date(data.publishDate || data.createdAt).toLocaleDateString('en-US', {
+    timeZone: 'UTC',
     month: 'short',
     day: 'numeric',
     year: 'numeric'
@@ -102,7 +103,6 @@ export default function PostPage() {
           
           <div className="flex items-center gap-6">
             <span>{formattedDate}</span>
-            <span>{data.readTime || 5} MIN READ</span>
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function PostPage() {
 
         {/* RIGHT SIDEBAR (STICKY) */}
         <aside className="lg:col-span-4 relative">
-          <div className="sticky top-24 flex flex-col gap-12">
+          <div className="sticky top-6 flex flex-col gap-12">
             
             {/* AD WIDGET */}
             <div className="w-full bg-white flex justify-center py-4 border border-gray-200">

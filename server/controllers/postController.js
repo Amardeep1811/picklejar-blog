@@ -76,3 +76,47 @@ export const deletePost = asyncHandler(async (req, res) => {
   await post.deleteOne();
   res.status(200).json({ success: true, message: 'Post deleted' });
 });
+
+export const searchPosts = asyncHandler(async (req, res) => {
+  const { q, vertical, timeRange, limit = 10, skip = 0 } = req.query;
+  const filter = { status: 'published' };
+  
+  if (q) {
+    const mongoose = (await import('mongoose')).default;
+    const matchedVerticals = await mongoose.model('Vertical').find({ name: { $regex: q, $options: 'i' } });
+    const verticalIds = matchedVerticals.map(v => v._id);
+    
+    filter.$or = [
+      { title: { $regex: q, $options: 'i' } },
+      { vertical: { $in: verticalIds } }
+    ];
+  }
+  
+  if (vertical && vertical !== 'all') {
+    filter.vertical = vertical;
+  }
+  
+  if (timeRange && timeRange !== 'any') {
+    const now = new Date();
+    let startDate;
+    if (timeRange === '24h') {
+      startDate = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+    } else if (timeRange === 'week') {
+      startDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+    } else if (timeRange === 'month') {
+      startDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+    }
+    
+    if (startDate) {
+      filter.publishDate = { $gte: startDate };
+    }
+  }
+  
+  const posts = await Post.find(filter)
+    .sort({ publishDate: -1, createdAt: -1 })
+    .skip(parseInt(skip, 10))
+    .limit(parseInt(limit, 10))
+    .populate('vertical', 'name slug');
+    
+  res.status(200).json({ success: true, data: posts });
+});
