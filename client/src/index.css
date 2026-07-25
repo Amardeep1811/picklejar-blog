@@ -25,6 +25,9 @@
     --gray-2: #8b8677;
     --line: #d8d1bd;
     --red: #c0392f;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Source Serif 4', serif;
+    --font-ui: 'Inter', sans-serif;
   }
 
   html, body {
@@ -34,10 +37,10 @@
 
   body {
     color: var(--ink);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-heading);
   }
 }

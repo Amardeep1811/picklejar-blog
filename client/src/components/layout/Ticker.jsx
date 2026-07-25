@@ -1,6 +1,6 @@
 export default function Ticker() {
   return (
-    <div className="bg-[#1f2418] text-[#d9d8c9] overflow-hidden whitespace-nowrap border-t border-[#2b3122] font-['Inter'] text-[12px]">
+    <div className="bg-[#1f2418] text-[#d9d8c9] overflow-hidden whitespace-nowrap border-t border-[#2b3122] font-[var(--font-ui)] text-[12px]">
       <div className="inline-flex gap-[56px] py-[9px] animate-ticker hover:[animation-play-state:paused]">
         <span className="inline-flex items-center gap-2 opacity-90 text-[#9fd39a]">&#8599; 14 NEW STORIES TODAY</span>
         <span className="inline-flex items-center gap-2 opacity-90">&#8599; DEBT &middot; reading now: 2,918</span>

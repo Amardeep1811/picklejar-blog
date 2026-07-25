@@ -14,7 +14,8 @@ export default function ManageVerticals() {
   const [formData, setFormData] = useState({
     name: '',
     active: true,
-    featured: false
+    featured: false,
+    featuredOrder: 1
   });
 
   useEffect(() => {
@@ -39,7 +40,12 @@ export default function ManageVerticals() {
   const handleEditClick = (vertical) => {
     setIsEditing(true);
     setEditingId(vertical._id);
-    setFormData({ name: vertical.name, active: vertical.active, featured: vertical.featured || false });
+    setFormData({ 
+      name: vertical.name, 
+      active: vertical.active, 
+      featured: vertical.featured || false,
+      featuredOrder: vertical.featuredOrder || 1
+    });
     setError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -47,7 +53,7 @@ export default function ManageVerticals() {
   const handleCancel = () => {
     setIsEditing(false);
     setEditingId(null);
-    setFormData({ name: '', active: true, featured: false });
+    setFormData({ name: '', active: true, featured: false, featuredOrder: 1 });
     setError('');
   };
 
@@ -148,7 +154,7 @@ export default function ManageVerticals() {
                 placeholder="e.g. Technology"
               />
             </div>
-            <div className="flex items-center mt-4 md:mt-8 space-x-6">
+            <div className="flex flex-wrap items-center mt-4 md:mt-8 gap-6">
               <label className="flex items-center cursor-pointer">
                 <input 
                   type="checkbox" 
@@ -158,15 +164,30 @@ export default function ManageVerticals() {
                 />
                 <span className="ml-2 text-sm font-medium">Active (Visible on site)</span>
               </label>
-              <label className="flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="form-checkbox h-5 w-5 text-yellow-500 rounded bg-gray-800 border-gray-600"
-                  checked={formData.featured}
-                  onChange={e => setFormData({...formData, featured: e.target.checked})}
-                />
-                <span className="ml-2 text-sm font-medium">Featured (Top Story section)</span>
-              </label>
+              <div className="flex items-center space-x-3">
+                <label className="flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="form-checkbox h-5 w-5 text-yellow-500 rounded bg-gray-800 border-gray-600"
+                    checked={formData.featured}
+                    onChange={e => setFormData({...formData, featured: e.target.checked})}
+                  />
+                  <span className="ml-2 text-sm font-medium">Featured</span>
+                </label>
+                {formData.featured && (
+                  <div className="flex items-center space-x-1.5 ml-2 bg-gray-800 px-3 py-1 rounded border border-gray-700">
+                    <span className="text-xs text-gray-300 font-medium">Priority:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="4"
+                      className="w-14 bg-gray-900 border border-gray-600 rounded px-2 py-0.5 text-center text-sm font-bold text-yellow-400 focus:outline-none focus:border-yellow-500"
+                      value={formData.featuredOrder}
+                      onChange={e => setFormData({...formData, featuredOrder: Math.min(4, Math.max(1, parseInt(e.target.value) || 1))})}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -202,8 +223,8 @@ export default function ManageVerticals() {
                       {vertical.active ? 'ACTIVE' : 'INACTIVE'}
                     </span>
                     {vertical.featured && (
-                      <span className="ml-2 text-xs px-2 py-1 rounded font-bold bg-yellow-900 text-yellow-300">
-                        FEATURED
+                      <span className="ml-2 text-xs px-2 py-1.5 rounded font-bold bg-yellow-900 text-yellow-300">
+                        FEATURED #{vertical.featuredOrder || 1}
                       </span>
                     )}
                   </td>

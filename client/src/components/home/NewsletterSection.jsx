@@ -24,10 +24,10 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="font-['Inter'] w-full mb-12">
+    <section className="font-[var(--font-ui)] w-full mb-12">
       <div className="bg-[var(--ink)] text-[#f2eee2] px-8 py-10 shadow-lg rounded-lg flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex-1 text-center md:text-left">
-          <h3 className="font-['Playfair_Display'] font-black text-3xl mb-2">Get the morning brief</h3>
+          <h3 className="font-[var(--font-heading)] font-black text-3xl mb-2">Get the morning brief</h3>
           <p className="text-[var(--gray-2)]">Your daily brief on money, markets, and more.</p>
         </div>
         

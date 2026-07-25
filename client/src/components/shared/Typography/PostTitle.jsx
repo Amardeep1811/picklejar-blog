@@ -1,5 +1,5 @@
 export default function PostTitle({ title, size = 'medium', className = '' }) {
-  const baseClasses = "font-['Inter'] font-bold text-[var(--ink)] group-hover:text-[var(--green-dark)] transition-colors";
+  const baseClasses = "font-[var(--font-heading)] font-bold text-[var(--ink)] group-hover:text-[var(--green-dark)] transition-colors";
   
   const sizeClasses = {
     hero: "text-4xl leading-[1.15] mb-3",

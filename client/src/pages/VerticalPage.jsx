@@ -97,7 +97,7 @@ export default function VerticalPage() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         
         {/* Page Heading */}
-        <h1 className="text-5xl md:text-7xl font-bold font-['Playfair_Display'] text-[var(--ink)] text-center mb-20 border-b-[4px] border-[var(--ink)] pb-10 tracking-tight capitalize">
+        <h1 className="text-5xl md:text-7xl font-bold font-serif text-[var(--ink)] text-center mb-20 border-b-[4px] border-[var(--ink)] pb-10 tracking-tight capitalize">
           {vertical.name}
         </h1>
 

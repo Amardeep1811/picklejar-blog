@@ -5,6 +5,7 @@ const verticalSchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true },
   active: { type: Boolean, default: true },
   featured: { type: Boolean, default: false },
+  featuredOrder: { type: Number, default: 1 },
 }, { timestamps: true });
 verticalSchema.pre('validate', function() {
   if (this.name && !this.slug) {

@@ -80,7 +80,7 @@ export default function PostPage() {
           </Link>
         )}
         
-        <h1 className="text-5xl md:text-6xl lg:text-[4rem] leading-[1.1] font-bold font-['Playfair_Display'] text-[var(--ink)] mb-6 max-w-3xl">
+        <h1 className="text-5xl md:text-6xl lg:text-[4rem] leading-[1.1] font-bold font-serif text-[var(--ink)] mb-6 max-w-3xl">
           {data.title}
         </h1>
         

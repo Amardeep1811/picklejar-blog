@@ -48,14 +48,17 @@ export default function MoreStoriesSection() {
         // 3. Process Featured Verticals
         if (vertsRes.data.success && vertsRes.data.data) {
           const vData = vertsRes.data.data;
-          if (vData.length > 0) {
-            setFeaturedVertA(vData[0]);
-            const pResA = await axios.get(`/posts?status=published&vertical=${vData[0]._id}&limit=4`);
+          const vertA = vData.find(v => v.featuredOrder === 3);
+          const vertB = vData.find(v => v.featuredOrder === 4);
+
+          if (vertA) {
+            setFeaturedVertA(vertA);
+            const pResA = await axios.get(`/posts?status=published&vertical=${vertA._id}&limit=4`);
             if (pResA.data.success) setVertAPosts(pResA.data.data);
           }
-          if (vData.length > 1) {
-            setFeaturedVertB(vData[1]);
-            const pResB = await axios.get(`/posts?status=published&vertical=${vData[1]._id}&limit=3`);
+          if (vertB) {
+            setFeaturedVertB(vertB);
+            const pResB = await axios.get(`/posts?status=published&vertical=${vertB._id}&limit=3`);
             if (pResB.data.success) setVertBPosts(pResB.data.data);
           }
         }
@@ -74,7 +77,7 @@ export default function MoreStoriesSection() {
   
   if (error) {
     return (
-      <section className="mb-12 font-['Inter']">
+      <section className="mb-12 font-[var(--font-ui)]">
         <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
       </section>
     );
@@ -83,7 +86,7 @@ export default function MoreStoriesSection() {
   const numFeatured = (featuredVertA ? 1 : 0) + (featuredVertB ? 1 : 0);
 
   return (
-    <section className="mb-12 font-['Inter']">
+    <section className="mb-12 font-[var(--font-ui)]">
       <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">
         
         {/* LEFT COLUMN: More Stories */}

@@ -44,7 +44,7 @@ export default function SportsSection() {
   };
 
   return (
-    <section className="w-full mb-12 font-['Inter']">
+    <section className="w-full mb-12 font-[var(--font-ui)]">
       <div className="bg-[var(--ink)] rounded-lg p-8 shadow-sm border border-[var(--ink)]">
         <h2 className="text-lg font-bold tracking-widest text-[var(--green)] mb-6 uppercase font-sans">Sports</h2>
         

@@ -54,7 +54,7 @@ export default function TrendingSection() {
 
   if (error) {
     return (
-      <section className="mb-12 border-t-[3px] border-[var(--green)] pt-4 font-['Inter']">
+      <section className="mb-12 border-t-[3px] border-[var(--green)] pt-4 font-[var(--font-ui)]">
         <h2 className="text-lg font-bold tracking-widest text-[var(--green)] mb-6 uppercase font-sans">TRENDING</h2>
         <div className="bg-red-50 text-red-500 p-4 rounded-md">
           {error}
@@ -70,7 +70,7 @@ export default function TrendingSection() {
   const midBottomPost = trendingPosts[2];
 
   return (
-    <section className="mb-12 font-['Inter']">
+    <section className="mb-12 font-[var(--font-ui)]">
       <h2 className="text-lg font-bold tracking-widest text-[var(--green)] uppercase font-sans">TRENDING</h2>
 
       <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">

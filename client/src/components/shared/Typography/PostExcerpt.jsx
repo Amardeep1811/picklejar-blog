@@ -1,7 +1,7 @@
 export default function PostExcerpt({ excerpt, size = 'medium', className = '' }) {
   if (!excerpt) return null;
 
-  const baseClasses = "font-['Source_Serif_4'] text-[var(--gray-2)]";
+  const baseClasses = "font-[var(--font-body)] text-[var(--gray-2)]";
   
   const sizeClasses = {
     medium: "text-[17px] leading-relaxed",
