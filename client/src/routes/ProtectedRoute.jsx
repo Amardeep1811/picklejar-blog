@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children }) {
       <header className="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <Link to="/admin/dashboard" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
-            Picklejar Admin
+            WalletPickle Admin
           </Link>
           <span className="text-sm text-gray-400 bg-gray-700 px-2 py-1 rounded">
             {user.role === 'admin' ? 'Administrator' : 'Editor'}

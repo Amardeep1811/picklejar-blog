@@ -155,7 +155,7 @@ export default function Sidebar() {
 
       {/* 5. Newsletter */}
       <div className="bg-[var(--ink)] text-[#f2eee2] p-6 shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
-        <h3 className="font-[var(--font-heading)] font-black text-xl mb-2">The Pickle Jar Daily</h3>
+        <h3 className="font-[var(--font-heading)] font-black text-xl mb-2">The Wallet Pickle Daily</h3>
         <p className="text-sm text-[var(--gray-2)] mb-5">Your daily brief on money, markets, and more.</p>
         
         {subStatus === 'success' ? (

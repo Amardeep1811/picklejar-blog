@@ -18,6 +18,17 @@ export default function Navbar() {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
   
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -69,18 +80,19 @@ export default function Navbar() {
     <>
     <div className={`sticky top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       <nav 
-        className={`w-full ${isScrolled || searchOpen ? 'bg-[var(--ink)]/95 backdrop-blur shadow-sm' : 'bg-[var(--ink)]'} px-6 py-4 flex justify-between items-center text-[#f2eee2] relative z-20 transition-colors duration-300`}
+        className={`w-full ${isScrolled || searchOpen ? 'bg-black/95 backdrop-blur shadow-sm' : 'bg-black'} px-6 py-4 flex justify-between items-center text-[#f2eee2] relative z-20 transition-colors duration-300`}
       >
-        <Link to="/" className="text-2xl font-bold font-[var(--font-heading)] tracking-tight flex items-center">
-          <span className="text-[#f2eee2]">PICKLE</span>
-          <span className="text-[var(--green)]">JAR</span>
+        <Link to="/" className="text-3xl font-bold font-[var(--font-heading)] tracking-tight flex items-center">
+          <span className="text-[#f2eee2]">Wallet</span>
+          <span className="text-[var(--green)]">Pickle</span>
         </Link>
         
-        <div className="hidden xl:flex items-center space-x-8 font-[var(--font-ui)] text-[#f2eee2] text-sm font-medium">
+        <div className="hidden xl:flex items-center space-x-8 font-[var(--font-ui)] text-[#f2eee2] text-sm font-bold tracking-wider">
           {verticals.map(v => (
             <Link 
               key={v._id} 
               to={`/${v.slug}`}
+              onClick={() => setSearchOpen(false)}
               className="relative group py-1 uppercase text-[#f2eee2]"
             >
               {v.name}
@@ -91,9 +103,12 @@ export default function Navbar() {
 
         <div className="flex items-center space-x-3 sm:space-x-6">
           <button 
-            onClick={() => setSearchOpen(!searchOpen)} 
-            aria-label="Toggle Search"
             className="text-[#f2eee2] opacity-85 hover:opacity-100 hover:text-[var(--green)] p-1 transition-colors"
+            onClick={() => {
+              setSearchOpen(!searchOpen);
+              if (mobileMenuOpen) setMobileMenuOpen(false);
+            }} 
+            aria-label="Toggle Search"
           >
             {searchOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,12 +120,15 @@ export default function Navbar() {
               </svg>
             )}
           </button>
-          <button className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 rounded-full font-semibold text-sm transition-colors">
+          <button className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 rounded-md cursor-pointer font-semibold text-sm transition-colors">
             Subscribe
           </button>
           <button 
             className="xl:hidden text-[#f2eee2] p-1"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => {
+              setMobileMenuOpen(true);
+              setSearchOpen(false);
+            }}
             aria-label="Open Menu"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,7 +144,7 @@ export default function Navbar() {
           <input 
             type="text" 
             className="w-full bg-[#2a2a2a] text-white px-4 py-3 rounded text-lg outline-none placeholder-gray-400 font-sans" 
-            placeholder="Search Pickle Jar" 
+            placeholder="Search Wallet Pickle" 
             value={searchQuery} 
             onChange={e => setSearchQuery(e.target.value)} 
           />
@@ -189,7 +207,7 @@ export default function Navbar() {
               </svg>
               <span>Search</span>
             </button>
-            <button className="bg-white text-[var(--green)] hover:bg-[var(--bg)] py-3 rounded-full font-bold text-center transition-colors">
+            <button className="bg-white text-[var(--green)] hover:bg-[var(--bg)] py-3 rounded-md cursor-pointer font-bold text-center transition-colors">
               Subscribe
             </button>
           </div>

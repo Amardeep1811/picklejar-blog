@@ -53,8 +53,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-[#2a2d24] py-6 px-8 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center text-[13px] gap-2 md:gap-0">
-        <div className="font-[var(--font-heading)] font-black text-[19px] text-[#f2eee2]">PICKLE JAR</div>
-        <div className="text-[#7d7a6c] text-[11.5px]">&copy; 2026 Pickle Jar Media. All rights reserved.</div>
+        <div className="font-[var(--font-heading)] font-black text-[22px] tracking-tight text-white mb-2 md:mb-0">
+          Wallet<span className="text-[var(--green)]">Pickle</span>
+        </div>
+        <div className="text-[#7d7a6c] text-[11.5px]">&copy; 2026 Wallet Pickle Media. All rights reserved.</div>
       </div>
     </footer>
   );

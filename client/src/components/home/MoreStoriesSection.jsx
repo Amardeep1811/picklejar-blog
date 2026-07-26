@@ -151,7 +151,7 @@ export default function MoreStoriesSection() {
                     </Link>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {vertAPosts.slice(1, 4).map(post => (
                       <Link key={post._id} to={`/${featuredVertA.slug}/${post.slug}`} className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-2 -mx-2">
                         {post.bannerImage ? (

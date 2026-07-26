@@ -129,7 +129,7 @@ export default function SearchPage() {
             </svg>
             <input 
               type="text" 
-              placeholder="Search Pickle Jar" 
+              placeholder="Search Wallet Pickle" 
               value={query}
               onChange={handleSearchChange}
               className="w-full bg-transparent text-black text-2xl md:text-3xl font-sans font-bold outline-none pl-10 pr-10 placeholder-gray-400"

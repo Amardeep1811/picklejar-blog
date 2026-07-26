@@ -176,7 +176,9 @@ export default function VerticalPage() {
                               )}
                             </div>
                             <div className="flex flex-col">
-                              <PostTitle title={post.title} size="medium" className="mb-2" />
+                              <div className="h-[44px] mb-2 overflow-hidden">
+                                <PostTitle title={post.title} size="medium" className="line-clamp-2" />
+                              </div>
                               <PostExcerpt excerpt={post.excerpt} size="small" />
                             </div>
                           </Link>
@@ -202,7 +204,9 @@ export default function VerticalPage() {
                               )}
                             </div>
                             <div className="flex flex-col">
-                              <PostTitle title={post.title} size="medium" className="mb-2" />
+                              <div className="h-[44px] mb-2 overflow-hidden">
+                                <PostTitle title={post.title} size="medium" className="line-clamp-2" />
+                              </div>
                               <PostExcerpt excerpt={post.excerpt} size="small" />
                             </div>
                           </Link>
@@ -231,7 +235,7 @@ export default function VerticalPage() {
                   <div className="w-1.5 h-4 bg-[var(--green)]"></div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
                   {morePosts.map(post => (
                     <Link 
                       key={post._id} 
