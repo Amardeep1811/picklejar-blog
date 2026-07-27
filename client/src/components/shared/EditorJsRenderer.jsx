@@ -1,4 +1,5 @@
 import React from 'react';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 export default function EditorJsRenderer({ blocks }) {
   if (!blocks || !Array.isArray(blocks)) return null;
@@ -9,16 +10,16 @@ export default function EditorJsRenderer({ blocks }) {
         switch (block.type) {
           case 'header': {
             const Tag = `h${block.data.level || 2}`;
-            return <Tag key={index} className="font-bold my-4">{block.data.text}</Tag>;
+            return <Tag key={index} className="font-bold my-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.data.text) }} />;
           }
           case 'paragraph':
-            return <p key={index} className="my-4">{block.data.text}</p>;
+            return <p key={index} className="my-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.data.text) }} />;
           case 'list': {
             const ListTag = block.data.style === 'ordered' ? 'ol' : 'ul';
             return (
               <ListTag key={index} className={`my-4 ${block.data.style === 'ordered' ? 'list-decimal' : 'list-disc'} ml-6`}>
                 {block.data.items.map((item, i) => (
-                  <li key={i}>{item}</li>
+                  <li key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
                 ))}
               </ListTag>
             );
@@ -37,7 +38,7 @@ export default function EditorJsRenderer({ blocks }) {
           case 'quote':
             return (
               <blockquote key={index} className="border-l-4 border-gray-500 pl-4 italic my-6 text-gray-700">
-                <div>{block.data.text}</div>
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.data.text) }} />
                 {block.data.caption && <cite className="block mt-2 text-sm text-gray-500">— {block.data.caption}</cite>}
               </blockquote>
             );

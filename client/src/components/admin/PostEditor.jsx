@@ -6,6 +6,7 @@ import ImageTool from '@editorjs/image';
 import Quote from '@editorjs/quote';
 import Embed from '@editorjs/embed';
 import Delimiter from '@editorjs/delimiter';
+import Marker from '@editorjs/marker';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 
 export default function PostEditor({ initialData, editorRef }) {
@@ -19,10 +20,12 @@ export default function PostEditor({ initialData, editorRef }) {
         holder: containerRef.current,
         data: initialData || { blocks: [] },
         placeholder: 'Write your story...',
+        inlineToolbar: ['bold', 'italic', 'link', 'marker'],
         tools: {
-          header: Header,
-          list: List,
-          quote: Quote,
+          marker: { class: Marker },
+          header: { class: Header, inlineToolbar: true },
+          list: { class: List, inlineToolbar: true },
+          quote: { class: Quote, inlineToolbar: true },
           embed: Embed,
           delimiter: Delimiter,
           image: {

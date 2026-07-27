@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EditorJsRenderer from '../components/shared/EditorJsRenderer';
-import SectionDividerAd from '../components/ads/SectionDividerAd';
+import ArticleAdCard from '../components/shared/ArticleAdCard';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 
@@ -11,11 +11,10 @@ export default function PostPage() {
   const { postSlug } = useParams();
   const [data, setData] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
+  const [inArticleAds, setInArticleAds] = useState([null, null]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,6 +33,18 @@ export default function PostPage() {
             if (relRes.data.success) {
               const filtered = relRes.data.data.filter(p => p._id !== post._id);
               setRelatedPosts(filtered);
+            }
+
+            // Fetch in-article ads
+            try {
+              const adsRes = await axios.get(`/ads/in-article?vertical=${post.vertical._id}&postId=${post._id}`);
+              if (adsRes.data.success && adsRes.data.data.length >= 2) {
+                setInArticleAds([adsRes.data.data[0], adsRes.data.data[1]]);
+              } else if (adsRes.data.success && adsRes.data.data.length === 1) {
+                setInArticleAds([adsRes.data.data[0], adsRes.data.data[0]]);
+              }
+            } catch (adErr) {
+              console.error('Failed to load in-article ads', adErr);
             }
           }
         }
@@ -58,9 +69,8 @@ export default function PostPage() {
 
   if (!data) return null;
 
-  // Split related posts into sidebar (max 4) and bottom grid (remaining up to 4)
-  const sidebarPosts = relatedPosts.slice(0, 4);
-  const morePosts = relatedPosts.slice(4, 8);
+  // Render bottom grid with up to 4 posts
+  const morePosts = relatedPosts.slice(0, 4);
 
   const formattedDate = new Date(data.publishDate || data.createdAt).toLocaleDateString('en-US', {
     timeZone: 'UTC',
@@ -142,41 +152,9 @@ export default function PostPage() {
 
         {/* RIGHT SIDEBAR (STICKY) */}
         <aside className="lg:col-span-4 relative">
-          <div className="sticky top-6 flex flex-col gap-12">
-            
-            {/* AD WIDGET */}
-            <div className="w-full bg-white flex justify-center py-4 border border-gray-200">
-              <SectionDividerAd />
-            </div>
-
-            {/* RELATED POSTS WIDGET */}
-            {sidebarPosts.length > 0 && (
-              <div className="bg-white p-6 border border-gray-200">
-                <div className="flex items-center gap-2 mb-6">
-                  <h3 className="text-sm font-bold tracking-widest text-[var(--ink)] uppercase font-sans">
-                    Most Read Today
-                  </h3>
-                </div>
-                
-                <div className="flex flex-col gap-5">
-                  {sidebarPosts.map((post, index) => (
-                    <Link 
-                      key={post._id} 
-                      to={`/${data.vertical?.slug || 'vertical'}/${post.slug}`} 
-                      className="group flex gap-4 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-2 -mx-2"
-                    >
-                      <span className="text-[var(--green)] font-bold text-lg font-serif leading-none mt-1">
-                        {index + 1}.
-                      </span>
-                      <h4 className="text-sm font-bold font-serif leading-snug group-hover:text-[var(--green)] transition-colors">
-                        {post.title}
-                      </h4>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-            
+          <div className="sticky top-28 flex flex-col">
+            <ArticleAdCard ad={inArticleAds[0]} />
+            <ArticleAdCard ad={inArticleAds[1]} />
           </div>
         </aside>
 

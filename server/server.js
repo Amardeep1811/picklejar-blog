@@ -19,6 +19,7 @@ import trendingRoutes from './routes/trendingRoutes.js';
 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { initTrendingJob } from './jobs/trendingJob.js';
+import { initExpiredAdsJob } from './jobs/expiredAdsJob.js';
 
 connectDB();
 const app = express();
@@ -65,4 +66,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   initTrendingJob();
+  initExpiredAdsJob();
 });

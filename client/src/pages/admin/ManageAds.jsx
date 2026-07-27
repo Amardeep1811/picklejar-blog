@@ -7,21 +7,29 @@ import LoadingSpinner from '../../components/shared/LoadingSpinner';
 export default function ManageAds() {
   const { user: currentUser } = useContext(AuthContext);
   const [ads, setAds] = useState([]);
+  const [verticals, setVerticals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   
-  const [formData, setFormData] = useState({
+  const initialFormState = {
+    _id: null,
     type: 'banner',
     placement: 'homepage',
     ctaText: '',
     ctaUrl: '',
     image: '',
-    active: true
-  });
+    active: true,
+    targetVertical: '',
+    startDate: '',
+    endDate: ''
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
     fetchAds();
+    fetchVerticals();
   }, []);
 
   const fetchAds = async () => {
@@ -35,6 +43,17 @@ export default function ManageAds() {
       console.error('Failed to load ads', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchVerticals = async () => {
+    try {
+      const res = await axios.get('/verticals');
+      if (res.data.success) {
+        setVerticals(res.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch verticals', error);
     }
   };
 
@@ -55,16 +74,63 @@ export default function ManageAds() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/ads', formData);
-      if (res.data.success) {
-        alert('Ad created successfully!');
-        setFormData({ type: 'banner', placement: 'homepage', ctaText: '', ctaUrl: '', image: '', active: true });
-        setIsEditing(false);
-        fetchAds();
+      const payload = { ...formData };
+      if (!payload.targetVertical) payload.targetVertical = null;
+      if (!payload.startDate) payload.startDate = null;
+      if (!payload.endDate) payload.endDate = null;
+
+      if (formData._id) {
+        const res = await axios.put(`/ads/${formData._id}`, payload);
+        if (res.data.success) {
+          alert('Ad updated successfully!');
+        }
+      } else {
+        delete payload._id;
+        const res = await axios.post('/ads', payload);
+        if (res.data.success) {
+          alert('Ad created successfully!');
+        }
       }
+      setFormData(initialFormState);
+      setIsEditing(false);
+      fetchAds();
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to save ad');
     }
+  };
+
+  const handleEditClick = (ad) => {
+    setFormData({
+      _id: ad._id,
+      type: ad.type,
+      placement: ad.placement,
+      ctaText: ad.ctaText || '',
+      ctaUrl: ad.ctaUrl || '',
+      image: ad.image || '',
+      active: ad.active,
+      targetVertical: ad.targetVertical || '',
+      startDate: ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : '',
+      endDate: ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : ''
+    });
+    setIsEditing(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this ad?')) {
+      try {
+        const res = await axios.delete(`/ads/${id}`);
+        if (res.data.success) {
+          fetchAds();
+        }
+      } catch (error) {
+        alert(error.response?.data?.message || 'Failed to delete ad');
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(initialFormState);
+    setIsEditing(false);
   };
 
   if (loading) return <LoadingSpinner />;
@@ -78,17 +144,50 @@ export default function ManageAds() {
     );
   }
 
+  // Summary counts for active in-article ads grouped by vertical
+  const inArticleAds = ads.filter(ad => ad.placement === 'in-article' && ad.active);
+  const summaryCounts = {};
+  
+  // Initialize with all verticals set to 0
+  verticals.forEach(v => {
+    summaryCounts[v.name] = 0;
+  });
+  summaryCounts['Global'] = 0;
+
+  inArticleAds.forEach(ad => {
+    if (ad.targetVertical) {
+      const vName = verticals.find(v => v._id === ad.targetVertical)?.name || 'Unknown';
+      summaryCounts[vName] = (summaryCounts[vName] || 0) + 1;
+    } else {
+      summaryCounts['Global']++;
+    }
+  });
+
+  const summaryString = Object.entries(summaryCounts)
+    .filter(([_, count]) => count > 0 || Object.keys(summaryCounts).length > 0)
+    .map(([name, count]) => `${name}: ${count}`)
+    .join(' · ');
+
   return (
     <div className="p-6 text-white max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Manage Ads</h1>
-        <button 
-          onClick={() => setIsEditing(!isEditing)} 
-          className="bg-blue-600 px-4 py-2 rounded text-white"
-        >
-          {isEditing ? 'Cancel' : 'Create New Ad'}
-        </button>
+        {!isEditing && (
+          <button 
+            onClick={() => setIsEditing(true)} 
+            className="bg-blue-600 px-4 py-2 rounded text-white"
+          >
+            Create New Ad
+          </button>
+        )}
       </div>
+
+      {!isEditing && inArticleAds.length >= 0 && (
+        <div className="mb-6 bg-gray-900 p-4 rounded text-sm text-gray-300">
+          <span className="font-bold text-white mr-2">In-Article Coverage:</span>
+          {summaryString || 'No in-article ads active.'}
+        </div>
+      )}
 
       {isEditing ? (
         <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 p-6 rounded-lg shadow-lg">
@@ -143,6 +242,51 @@ export default function ManageAds() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block mb-2 text-sm font-medium">Target Vertical</label>
+              <select 
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+                value={formData.targetVertical} 
+                onChange={e => setFormData({...formData, targetVertical: e.target.value})}
+              >
+                <option value="">Global / No target</option>
+                {verticals.map(v => (
+                  <option key={v._id} value={v._id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-medium">Start Date</label>
+              <input 
+                type="date" 
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+                value={formData.startDate} 
+                onChange={e => setFormData({...formData, startDate: e.target.value})} 
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-medium">End Date</label>
+              <input 
+                type="date" 
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+                value={formData.endDate} 
+                onChange={e => setFormData({...formData, endDate: e.target.value})} 
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              id="active"
+              checked={formData.active}
+              onChange={e => setFormData({...formData, active: e.target.checked})}
+              className="w-4 h-4 text-green-600 bg-gray-800 border-gray-700 rounded"
+            />
+            <label htmlFor="active" className="text-sm font-medium">Active</label>
+          </div>
+
           <div>
             <label className="block mb-2 text-sm font-medium">Ad Image</label>
             <input 
@@ -157,23 +301,64 @@ export default function ManageAds() {
             )}
           </div>
 
-          <button type="submit" className="w-full bg-green-600 py-3 rounded font-bold hover:bg-green-700">
-            Save Ad
-          </button>
+          <div className="flex space-x-4">
+            <button type="submit" className="flex-1 bg-green-600 py-3 rounded font-bold hover:bg-green-700">
+              {formData._id ? 'Update Ad' : 'Save Ad'}
+            </button>
+            <button type="button" onClick={handleCancel} className="flex-1 bg-gray-600 py-3 rounded font-bold hover:bg-gray-700">
+              Cancel
+            </button>
+          </div>
         </form>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {ads.map(ad => (
-            <div key={ad._id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex items-center space-x-4">
-              {ad.image && (
-                <img src={ad.image} className="w-24 h-24 object-cover rounded" alt="Ad Thumbnail" />
-              )}
-              <div>
-                <h3 className="font-bold text-lg">{ad.type.toUpperCase()}</h3>
-                <p className="text-sm text-gray-400">Placement: {ad.placement}</p>
-                <a href={ad.ctaUrl} target="_blank" rel="noreferrer" className="text-blue-400 text-sm hover:underline">
-                  {ad.ctaText || 'Link'}
-                </a>
+            <div key={ad._id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                {ad.image ? (
+                  <img src={ad.image} className="w-24 h-24 object-cover rounded" alt="Ad Thumbnail" />
+                ) : (
+                  <div className="w-24 h-24 bg-gray-700 rounded flex items-center justify-center text-xs text-gray-500">No Image</div>
+                )}
+                <div>
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    {ad.type.toUpperCase()}
+                    {!ad.active && <span className="text-xs bg-red-600 text-white px-2 py-0.5 rounded">Inactive</span>}
+                  </h3>
+                  <p className="text-sm text-gray-400">Placement: <span className="text-white">{ad.placement}</span></p>
+                  
+                  {ad.placement === 'in-article' && (
+                    <p className="text-sm text-gray-400">
+                      Target: <span className="text-white">
+                        {ad.targetVertical ? (verticals.find(v => v._id === ad.targetVertical)?.name || 'Unknown') : 'Global'}
+                      </span>
+                    </p>
+                  )}
+                  
+                  {ad.endDate && (
+                    <p className="text-sm text-red-400 font-medium">
+                      Expires: {new Date(ad.endDate).toLocaleDateString()}
+                    </p>
+                  )}
+                  
+                  <a href={ad.ctaUrl} target="_blank" rel="noreferrer" className="text-blue-400 text-sm hover:underline block mt-1">
+                    {ad.ctaText || 'No CTA Text / Link'}
+                  </a>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => handleEditClick(ad)}
+                  className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm transition-colors"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={() => handleDelete(ad._id)}
+                  className="bg-red-600/80 hover:bg-red-600 px-3 py-1 rounded text-sm transition-colors"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
