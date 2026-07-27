@@ -82,12 +82,12 @@ export default function Navbar() {
         <nav
           className={`w-full ${isScrolled || searchOpen ? 'bg-black/95 backdrop-blur shadow-sm' : 'bg-black'} px-6 py-4 flex justify-between items-center text-[#f2eee2] relative z-20 transition-colors duration-300`}
         >
-          <Link to="/" className="text-3xl font-bold font-[var(--font-heading)] tracking-tight flex items-center">
+          <Link to="/" className="flex items-center" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: "26px", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
             <span className="text-[#f2eee2]">Wallet</span>
             <span className="text-[var(--green)]">Pickle</span>
           </Link>
 
-          <div className="hidden xl:flex items-center space-x-8 font-[var(--font-ui)] text-[#f2eee2] text-sm font-bold tracking-wider">
+          <div className="hidden xl:flex items-center text-[#f2eee2]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "11px", letterSpacing: "0.9px", fontWeight: 600, gap: "18px" }}>
             {verticals.map(v => (
               <Link
                 key={v._id}
@@ -120,7 +120,7 @@ export default function Navbar() {
                 </svg>
               )}
             </button>
-            <button className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 rounded-md cursor-pointer font-semibold text-sm transition-colors">
+            <button className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 cursor-pointer font-semibold text-sm transition-colors" style={{ borderRadius: "3px" }}>
               Subscribe
             </button>
             <button

@@ -33,22 +33,34 @@ const dummyTitles = [
   "Understanding the New 529 College Savings Plan Rules",
   "How to Audit Your Own Monthly Subscriptions and Save",
   "The Hidden Fees in Your 401(k) and How to Spot Them",
-  "Ticket Prices Are Down for the First Time in Five Seasons",
-  "The Quiet Rise of Athlete-Owned Sports Bars",
-  "Why Insurers Are Watching the Injury Report Closer Than Bettors Are",
-  "How the New Broadcast Deal Impacts Franchise Valuations",
+  "The Biggest Transfer Rumors Still Unresolved Heading Into August",
   "The Hidden Economics of Minor League Merchandising",
-  "When Stadium Naming Rights Actually Pay Off for Sponsors"
+  "Why Home Crowds Matter More Than Ever in Modern Sports",
+  "Ticket Prices Are Down for the First Time in Five Seasons",
+  "When Stadium Naming Rights Actually Pay Off for Sponsors",
+  "How the New Broadcast Deal Impacts Franchise Valuations",
+  "The Unprecedented Rise of Women's Sports Sponsorships"
 ];
 
 const sportsTitles = [
-  "Ticket Prices Are Down for the First Time in Five Seasons",
-  "The Quiet Rise of Athlete-Owned Sports Bars",
-  "Why Insurers Are Watching the Injury Report Closer Than Bettors Are",
-  "How the New Broadcast Deal Impacts Franchise Valuations",
+  "The Biggest Transfer Rumors Still Unresolved Heading Into August",
   "The Hidden Economics of Minor League Merchandising",
-  "When Stadium Naming Rights Actually Pay Off for Sponsors"
+  "Why Home Crowds Matter More Than Ever in Modern Sports",
+  "Ticket Prices Are Down for the First Time in Five Seasons",
+  "When Stadium Naming Rights Actually Pay Off for Sponsors",
+  "How the New Broadcast Deal Impacts Franchise Valuations",
+  "The Unprecedented Rise of Women's Sports Sponsorships"
 ];
+
+const sportsExcerpts = {
+  "The Biggest Transfer Rumors Still Unresolved Heading Into August": "Europe's biggest clubs are still chasing marquee signings as the 2026 summer transfer window enters a crucial stage. From Bradley Barcola to Julián Álvarez, several blockbuster moves remain unresolved.",
+  "The Hidden Economics of Minor League Merchandising": "An inside look at how minor league teams turn quirky branding into major profit.",
+  "Why Home Crowds Matter More Than Ever in Modern Sports": "Despite advanced analytics, the psychological edge of a roaring home crowd remains undeniable.",
+  "Ticket Prices Are Down for the First Time in Five Seasons": "Fans are finally seeing relief at the box office as leagues adjust their pricing strategies.",
+  "When Stadium Naming Rights Actually Pay Off for Sponsors": "Not every mega-deal works out, but here is what happens when stadium branding strikes gold.",
+  "How the New Broadcast Deal Impacts Franchise Valuations": "The latest multi-billion dollar TV contracts are reshaping how we evaluate team worth.",
+  "The Unprecedented Rise of Women's Sports Sponsorships": "Major brands are finally realizing the massive ROI potential in women's leagues as viewership numbers hit all-time highs."
+};
 
 const financeTitles = [
   "How to Rebalance Your Portfolio Before the Next Rate Cut",
@@ -234,7 +246,7 @@ async function seedDummyPosts() {
 
       postsToCreate.push({
         title,
-        excerpt: generateExcerpt(title),
+        excerpt: sportsExcerpts[title] || generateExcerpt(title),
         bannerImage: `https://picsum.photos/seed/dummyseed${i}/1200/675`,
         body: generateBody(title),
         author: admin._id,

@@ -17,7 +17,7 @@ export default function SportsSection() {
         
         if (vertical) {
           const [pRes, petRes] = await Promise.all([
-            axios.get(`/posts?status=published&vertical=${vertical._id}&limit=6`),
+            axios.get(`/posts?status=published&vertical=${vertical._id}&limit=7`),
             axios.get('/petitions?active=true&limit=5')
           ]);
           if (pRes.data.success) setPosts(pRes.data.data);
@@ -36,7 +36,7 @@ export default function SportsSection() {
   if (posts.length === 0) return null;
 
   const heroPost = posts[0];
-  const listPosts = posts.slice(1, 6);
+  const listPosts = posts.slice(1, 7);
 
   const formatK = (num) => {
     if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
@@ -48,7 +48,7 @@ export default function SportsSection() {
       <div className="bg-[var(--ink)] rounded-lg p-8 shadow-sm border border-[var(--ink)]">
         <h2 className="text-lg font-bold tracking-widest text-[var(--green)] mb-6 uppercase font-sans">Sports</h2>
         
-        <div className="flex flex-col lg:flex-row items-start gap-8 border-t border-[#333] pt-8">
+        <div className="flex flex-col lg:flex-row items-stretch gap-8 border-t border-[#333] pt-8">
           
           {/* LEFT: Hero Post */}
           <div className="w-full lg:w-[45%] flex flex-col lg:pr-8 lg:border-r border-[#333]">

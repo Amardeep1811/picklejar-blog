@@ -34,10 +34,7 @@ export const getPost = asyncHandler(async (req, res) => {
     throw new Error('Post not found');
   }
   
-  // Track view asynchronously so we don't block the response
-  PostView.create({ post: post._id, ipHash: req.ip }).catch(err => {
-    console.error('Failed to log post view:', err);
-  });
+  // View tracking is now handled by a separate endpoint (recordView)
 
   res.status(200).json({ success: true, data: post });
 });
@@ -119,4 +116,23 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .populate('vertical', 'name slug');
     
   res.status(200).json({ success: true, data: posts });
+});
+
+export const recordView = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const ipHash = req.ip;
+
+  // Deduplication: check if this IP viewed this post in the last 24 hours
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const existingView = await PostView.findOne({
+    post: id,
+    ipHash,
+    timestamp: { $gte: oneDayAgo }
+  });
+
+  if (!existingView) {
+    await PostView.create({ post: id, ipHash });
+  }
+
+  res.status(200).json({ success: true });
 });

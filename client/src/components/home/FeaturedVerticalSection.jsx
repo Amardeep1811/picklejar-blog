@@ -69,17 +69,17 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
         </h2>
       </div>
 
-      <div className="flex flex-col lg:flex-row items-start gap-6 border-t border-[var(--line)] pt-8">
+      <div className="flex flex-col lg:flex-row items-stretch gap-6 border-t border-[var(--line)] pt-8">
 
-        {/* LEFT COLUMN: 65% Width */}
+        {/* LEFT COLUMN: 60% Width */}
         <div className="w-full lg:w-[65%] flex flex-col lg:pr-6 pb-6 lg:pb-0 lg:border-r border-[var(--line)]">
           {largePost && (
-            <Link 
-              to={`/${largePost.vertical?.slug || vertical.slug}/${largePost.slug}`} 
+            <Link
+              to={`/${largePost.vertical?.slug || vertical.slug}/${largePost.slug}`}
               className="group flex flex-col md:flex-row gap-6 mb-6 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -mt-4"
             >
               {/* TEXT COLUMN */}
-              <div className="w-full md:w-[45%] flex flex-col justify-start">
+              <div className="w-full md:w-[40%] flex flex-col justify-start">
                 <PostTitle title={largePost.title} size="hero" className="mb-3 text-3xl leading-tight" />
                 <PostExcerpt excerpt={largePost.excerpt} size="medium" className="mb-4" />
               </div>
@@ -98,9 +98,9 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
             <div className="pt-6 border-t border-[var(--line)]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {mediumPosts.map(post => (
-                  <Link 
-                    key={post._id} 
-                    to={`/${post.vertical?.slug || vertical.slug}/${post.slug}`} 
+                  <Link
+                    key={post._id}
+                    to={`/${post.vertical?.slug || vertical.slug}/${post.slug}`}
                     className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3"
                   >
                     <div className="flex gap-4">
@@ -122,20 +122,20 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
           )}
         </div>
 
-        {/* RIGHT COLUMN: 35% Width */}
-        <div className="w-full lg:w-[35%] flex flex-col">
+        {/* RIGHT COLUMN: 40% Width */}
+        <div className="w-full lg:w-[35%] flex flex-col justify-between">
           {gridPosts.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
               {gridPosts.map((post) => (
-                <Link 
-                  key={post._id} 
-                  to={`/${post.vertical?.slug || vertical.slug}/${post.slug}`} 
+                <Link
+                  key={post._id}
+                  to={`/${post.vertical?.slug || vertical.slug}/${post.slug}`}
                   className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3"
                 >
                   {post.bannerImage ? (
-                    <img src={post.bannerImage} alt={post.title} className="w-full aspect-video object-cover mb-3 rounded-sm" />
+                    <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-3 rounded-sm" />
                   ) : (
-                    <div className="w-full aspect-video bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
+                    <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
                   )}
                   <div className="flex flex-col flex-1">
                     <PostTitle title={post.title} size="small" />

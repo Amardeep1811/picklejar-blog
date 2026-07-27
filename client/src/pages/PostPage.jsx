@@ -26,6 +26,9 @@ export default function PostPage() {
         if (res.data.success) {
           const post = res.data.data;
           setData(post);
+
+          // Log view
+          axios.post(`/posts/${post._id}/view`).catch(err => console.error('Failed to log view:', err));
           
           if (post.vertical) {
             // Fetch related posts (same vertical, up to 10 to ensure we have enough after excluding current)
