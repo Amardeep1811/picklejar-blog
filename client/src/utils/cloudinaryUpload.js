@@ -5,6 +5,7 @@
  * @returns {Promise<string>} - The secure URL of the uploaded image
  */
 export async function uploadToCloudinary(file) {
+  // Client-side checks only — the Cloudinary unsigned upload preset must ALSO have file type and max size restrictions configured in the Cloudinary dashboard, since these checks can be bypassed.
   // Validate file type
   const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
   if (!validTypes.includes(file.type)) {

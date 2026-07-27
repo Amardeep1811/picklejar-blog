@@ -8,7 +8,7 @@ export const getFeaturedVerticals = asyncHandler(async (req, res) => {
 });
 
 export const getVerticals = asyncHandler(async (req, res) => {
-  const verticals = await Vertical.find({}).sort({ featuredOrder: 1, createdAt: -1 });
+  const verticals = await Vertical.find({}).sort({ createdAt: 1 });
   res.status(200).json({ success: true, data: verticals });
 });
 
@@ -32,13 +32,15 @@ export const createVertical = asyncHandler(async (req, res) => {
   }
 
   const vertical = await Vertical.create({ name, active, featured, featuredOrder: orderToUse });
-  console.log('--- DB WRITE: createVertical ---', {
-    id: vertical._id,
-    name: vertical.name,
-    slug: vertical.slug,
-    db: vertical.collection.dbName,
-    collection: vertical.collection.name
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('--- DB WRITE: createVertical ---', {
+      id: vertical._id,
+      name: vertical.name,
+      slug: vertical.slug,
+      db: vertical.collection.dbName,
+      collection: vertical.collection.name
+    });
+  }
   res.status(201).json({ success: true, message: 'Vertical created', data: vertical });
 });
 

@@ -13,8 +13,5 @@ router.route('/:id')
   .put(protect, role(['admin', 'editor']), validate(postSchema), updatePost)
   .delete(protect, role(['admin', 'editor']), deletePost);
 
-router.post('/:id/view', (req, res, next) => {
-  import('../controllers/postController.js').then(c => c.recordView(req, res, next)).catch(next);
-});
 
 export default router;

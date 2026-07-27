@@ -19,12 +19,14 @@ export const getPetitions = asyncHandler(async (req, res) => {
 
 export const createPetition = asyncHandler(async (req, res) => {
   const petition = await Petition.create(req.body);
-  console.log('--- DB WRITE: createPetition ---', {
-    id: petition._id,
-    title: petition.title,
-    db: petition.collection.dbName,
-    collection: petition.collection.name
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('--- DB WRITE: createPetition ---', {
+      id: petition._id,
+      title: petition.title,
+      db: petition.collection.dbName,
+      collection: petition.collection.name
+    });
+  }
   res.status(201).json({ success: true, message: 'Petition created', data: petition });
 });
 

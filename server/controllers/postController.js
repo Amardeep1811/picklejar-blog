@@ -1,6 +1,11 @@
+import crypto from 'crypto';
 import Post from '../models/Post.js';
 import PostView from '../models/PostView.js';
 import asyncHandler from '../utils/asyncHandler.js';
+
+const escapeRegex = (string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 
 export const getPosts = asyncHandler(async (req, res) => {
   const filter = {};
@@ -34,20 +39,38 @@ export const getPost = asyncHandler(async (req, res) => {
     throw new Error('Post not found');
   }
   
-  // View tracking is now handled by a separate endpoint (recordView)
+  // Track view asynchronously on GET /api/posts/:slug with IP hashing and 24h deduplication
+  const rawIp = req.ip || '';
+  const salt = process.env.IP_SALT || 'picklejar-ip-salt';
+  const ipHash = crypto.createHmac('sha256', salt).update(rawIp).digest('hex');
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  PostView.findOne({
+    post: post._id,
+    ipHash,
+    timestamp: { $gte: oneDayAgo }
+  }).then(existingView => {
+    if (!existingView) {
+      return PostView.create({ post: post._id, ipHash });
+    }
+  }).catch(err => {
+    console.error('Failed to log post view:', err);
+  });
 
   res.status(200).json({ success: true, data: post });
 });
 
 export const createPost = asyncHandler(async (req, res) => {
   const post = await Post.create(req.body);
-  console.log('--- DB WRITE: createPost ---', {
-    id: post._id,
-    title: post.title,
-    slug: post.slug,
-    db: post.collection.dbName,
-    collection: post.collection.name
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('--- DB WRITE: createPost ---', {
+      id: post._id,
+      title: post.title,
+      slug: post.slug,
+      db: post.collection.dbName,
+      collection: post.collection.name
+    });
+  }
   res.status(201).json({ success: true, message: 'Post created', data: post });
 });
 
@@ -79,12 +102,13 @@ export const searchPosts = asyncHandler(async (req, res) => {
   const filter = { status: 'published' };
   
   if (q) {
+    const escapedQ = escapeRegex(q);
     const mongoose = (await import('mongoose')).default;
-    const matchedVerticals = await mongoose.model('Vertical').find({ name: { $regex: q, $options: 'i' } });
+    const matchedVerticals = await mongoose.model('Vertical').find({ name: { $regex: escapedQ, $options: 'i' } });
     const verticalIds = matchedVerticals.map(v => v._id);
     
     filter.$or = [
-      { title: { $regex: q, $options: 'i' } },
+      { title: { $regex: escapedQ, $options: 'i' } },
       { vertical: { $in: verticalIds } }
     ];
   }
@@ -116,23 +140,4 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .populate('vertical', 'name slug');
     
   res.status(200).json({ success: true, data: posts });
-});
-
-export const recordView = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const ipHash = req.ip;
-
-  // Deduplication: check if this IP viewed this post in the last 24 hours
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const existingView = await PostView.findOne({
-    post: id,
-    ipHash,
-    timestamp: { $gte: oneDayAgo }
-  });
-
-  if (!existingView) {
-    await PostView.create({ post: id, ipHash });
-  }
-
-  res.status(200).json({ success: true });
 });

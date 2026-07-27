@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
-import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 
@@ -21,9 +21,32 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { initTrendingJob } from './jobs/trendingJob.js';
 import { initExpiredAdsJob } from './jobs/expiredAdsJob.js';
 
+// Startup env check
+const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL'];
+const missingEnv = requiredEnv.filter(key => {
+  if (key === 'MONGO_URI') return !process.env.MONGO_URI && !process.env.MONGODB_URI;
+  return !process.env[key];
+});
+
+if (missingEnv.length > 0) {
+  console.error(`FATAL ERROR: Missing required environment variable(s): ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
 connectDB();
 const app = express();
+
+// Trust proxy settings (Render reverse proxy)
+app.set('trust proxy', 1);
+
 app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
+// Body and Cookie Parsers BEFORE Mongo Sanitize
+app.use(express.json());
+app.use(cookieParser());
+
+// Mongo Sanitization
 app.use((req, res, next) => {
   req.body = mongoSanitize.sanitize(req.body);
   req.params = mongoSanitize.sanitize(req.params);
@@ -37,17 +60,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Increased limit just in case
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+// Health check endpoint (placed before rate limiters)
+app.get('/api/health', (req, res) => {
+  const isConnected = mongoose.connection.readyState === 1;
+  const statusCode = isConnected ? 200 : 503;
+  res.status(statusCode).json({
+    success: isConnected,
+    status: isConnected ? 'ok' : 'degraded',
+    db: isConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
 });
-app.use('/api/auth', limiter);
-app.use(express.json());
-app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);

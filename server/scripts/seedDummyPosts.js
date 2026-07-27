@@ -10,7 +10,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/picklejar';
+const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  console.error('Error: MONGO_URI or MONGODB_URI environment variable is required.');
+  process.exit(1);
+}
 
 const dummyTitles = [
   "Why Your Insurance Premium Keeps Rising Even With a Clean Record",

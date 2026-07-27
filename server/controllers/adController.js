@@ -25,12 +25,14 @@ export const getAds = asyncHandler(async (req, res) => {
 
 export const createAd = asyncHandler(async (req, res) => {
   const ad = await Ad.create(req.body);
-  console.log('--- DB WRITE: createAd ---', {
-    id: ad._id,
-    type: ad.type,
-    db: ad.collection.dbName,
-    collection: ad.collection.name
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('--- DB WRITE: createAd ---', {
+      id: ad._id,
+      type: ad.type,
+      db: ad.collection.dbName,
+      collection: ad.collection.name
+    });
+  }
   res.status(201).json({ success: true, message: 'Ad created', data: ad });
 });
 
