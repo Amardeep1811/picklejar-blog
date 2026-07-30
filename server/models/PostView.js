@@ -5,4 +5,6 @@ const postViewSchema = new mongoose.Schema({
   ipHash: String,
   isSeeded: { type: Boolean, default: false }
 });
+postViewSchema.index({ post: 1, timestamp: -1 });
+
 export default mongoose.model('PostView', postViewSchema);

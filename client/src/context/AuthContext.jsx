@@ -20,7 +20,11 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
-    fetchMe();
+    if (window.location.pathname.startsWith('/admin')) {
+      fetchMe();
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const login = async (email, password) => { 

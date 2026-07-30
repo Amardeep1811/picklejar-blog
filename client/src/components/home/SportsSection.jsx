@@ -1,39 +1,13 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from '../../api/axios';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import PostTitle from '../shared/Typography/PostTitle';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
-export default function SportsSection() {
-  const [posts, setPosts] = useState([]);
-  const [petitions, setPetitions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sportsRes = await axios.get('/verticals?slug=sports');
-        const vertical = sportsRes.data.success && sportsRes.data.data.find(v => v.slug === 'sports');
-        
-        if (vertical) {
-          const [pRes, petRes] = await Promise.all([
-            axios.get(`/posts?status=published&vertical=${vertical._id}&limit=7`),
-            axios.get('/petitions?active=true&limit=5')
-          ]);
-          if (pRes.data.success) setPosts(pRes.data.data);
-          if (petRes.data.success) setPetitions(petRes.data.data);
-        }
-      } catch (err) {
-        console.error('Failed to load sports section', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+export default function SportsSection({ data }) {
+  if (!data) return null;
+  const { posts = [], petitions = [] } = data;
 
-  if (loading) return <LoadingSpinner />;
   if (posts.length === 0) return null;
+
 
   const heroPost = posts[0];
   const listPosts = posts.slice(1, 7);
@@ -54,7 +28,7 @@ export default function SportsSection() {
           <div className="w-full lg:w-[45%] flex flex-col lg:pr-8 lg:border-r border-[#333]">
             <Link to={`/sports/${heroPost.slug}`} className="group block mb-6 transition-all duration-200 ease-in-out hover:bg-white/5 hover:shadow-lg hover:scale-[1.01] rounded-xl p-4 -mx-4 -mt-4">
               {heroPost.bannerImage ? (
-                <img src={heroPost.bannerImage} alt={heroPost.title} className="w-full aspect-[16/9] object-cover mb-4" />
+                <img src={optimizeCloudinaryUrl(heroPost.bannerImage, { width: 600, crop: 'fill' })} alt={heroPost.title} className="w-full aspect-[16/9] object-cover mb-4" loading="lazy" />
               ) : (
                 <div className="w-full aspect-[16/9] bg-[#222] border border-[#333] mb-4 flex items-center justify-center text-gray-500">No Image</div>
               )}

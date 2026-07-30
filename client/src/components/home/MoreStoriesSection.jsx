@@ -1,87 +1,15 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from '../../api/axios';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import PostTitle from '../shared/Typography/PostTitle';
 import PostExcerpt from '../shared/Typography/PostExcerpt';
 import PostMeta from '../shared/Typography/PostMeta';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
-export default function MoreStoriesSection() {
-  const [moreStories, setMoreStories] = useState([]);
-  const [featuredVertA, setFeaturedVertA] = useState(null);
-  const [vertAPosts, setVertAPosts] = useState([]);
-  const [featuredVertB, setFeaturedVertB] = useState(null);
-  const [vertBPosts, setVertBPosts] = useState([]);
-  const [ad, setAd] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function MoreStoriesSection({ data: moreStories = [], vertAData = null, vertBData = null, adData: ad = null }) {
+  const featuredVertA = vertAData?.vertical;
+  const vertAPosts = vertAData?.posts || [];
+  const featuredVertB = vertBData?.vertical;
+  const vertBPosts = vertBData?.posts || [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch base data
-        const [trendingRes, allPostsRes, vertsRes, adRes] = await Promise.all([
-          axios.get('/trending'),
-          axios.get('/posts?status=published&limit=15'),
-          axios.get('/verticals/featured'),
-          axios.get('/ads?placement=sidebar&active=true&limit=1')
-        ]);
-
-        // 1. Process "More Stories" (excluding trending)
-        let excludedIds = [];
-        if (trendingRes.data.success && trendingRes.data.data) {
-          excludedIds = trendingRes.data.data.map(p => p._id);
-        }
-        
-        if (allPostsRes.data.success) {
-          const filtered = allPostsRes.data.data
-            .filter(p => !excludedIds.includes(p._id))
-            .slice(0, 7);
-          setMoreStories(filtered);
-        }
-
-        // 2. Set Ad
-        if (adRes.data.success && adRes.data.data.length > 0) {
-          setAd(adRes.data.data[0]);
-        }
-
-        // 3. Process Featured Verticals
-        if (vertsRes.data.success && vertsRes.data.data) {
-          const vData = vertsRes.data.data;
-          const vertA = vData.find(v => v.featuredOrder === 3);
-          const vertB = vData.find(v => v.featuredOrder === 4);
-
-          if (vertA) {
-            setFeaturedVertA(vertA);
-            const pResA = await axios.get(`/posts?status=published&vertical=${vertA._id}&limit=4`);
-            if (pResA.data.success) setVertAPosts(pResA.data.data);
-          }
-          if (vertB) {
-            setFeaturedVertB(vertB);
-            const pResB = await axios.get(`/posts?status=published&vertical=${vertB._id}&limit=3`);
-            if (pResB.data.success) setVertBPosts(pResB.data.data);
-          }
-        }
-
-      } catch (err) {
-        console.error('Failed to load More Stories section:', err);
-        setError('Failed to load content.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) return <LoadingSpinner />;
-  
-  if (error) {
-    return (
-      <section className="mb-12 font-[var(--font-ui)]">
-        <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
-      </section>
-    );
-  }
 
   const numFeatured = (featuredVertA ? 1 : 0) + (featuredVertB ? 1 : 0);
 
@@ -109,7 +37,7 @@ export default function MoreStoriesSection() {
                       {isFirst ? (
                         <div>
                           {post.bannerImage ? (
-                            <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/9] object-cover mb-3" />
+                            <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 600, crop: 'fill' })} alt={post.title} className="w-full aspect-[16/9] object-cover mb-3" loading="lazy" />
                           ) : (
                             <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400">No Img</div>
                           )}
@@ -142,7 +70,7 @@ export default function MoreStoriesSection() {
                   <div className="pb-5 mb-5 border-b border-[var(--line)]">
                     <Link to={`/${featuredVertA.slug}/${vertAPosts[0].slug}`} className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3">
                       {vertAPosts[0].bannerImage ? (
-                        <img src={vertAPosts[0].bannerImage} alt={vertAPosts[0].title} className="w-full aspect-video object-cover mb-3" />
+                        <img src={optimizeCloudinaryUrl(vertAPosts[0].bannerImage, { width: 600, crop: 'fill' })} alt={vertAPosts[0].title} className="w-full aspect-video object-cover mb-3" loading="lazy" />
                       ) : (
                         <div className="w-full aspect-video bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400">No Img</div>
                       )}
@@ -155,7 +83,7 @@ export default function MoreStoriesSection() {
                     {vertAPosts.slice(1, 4).map(post => (
                       <Link key={post._id} to={`/${featuredVertA.slug}/${post.slug}`} className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-2 -mx-2">
                         {post.bannerImage ? (
-                          <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-2" />
+                          <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 300, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover mb-2" loading="lazy" />
                         ) : (
                           <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-2 flex items-center justify-center text-xs text-gray-400">No Img</div>
                         )}
@@ -175,7 +103,7 @@ export default function MoreStoriesSection() {
         <div className={`w-full ${numFeatured === 0 ? 'lg:w-[40%]' : 'lg:w-[30%]'} flex flex-col`}>
           
           {/* Ad Slot */}
-          <div className={`mb-4 ${numFeatured > 1 ? 'border-b border-[var(--line)] pb-4' : ''}`}>
+          <div className={`mb-4 min-h-[320px] ${numFeatured > 1 ? 'border-b border-[var(--line)] pb-4' : ''}`}>
             <div className="text-[10px] text-[var(--gray-2)] text-center uppercase tracking-wider mb-2">ADVERTISEMENT</div>
             <div className="w-full flex justify-center">
               {ad ? (
@@ -218,7 +146,7 @@ export default function MoreStoriesSection() {
                           {isFirst ? (
                             <div className="block">
                               {post.bannerImage ? (
-                                <img src={post.bannerImage} alt={post.title} className="w-full aspect-video object-cover mb-3" />
+                                <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 600, crop: 'fill' })} alt={post.title} className="w-full aspect-video object-cover mb-3" loading="lazy" />
                               ) : (
                                 <div className="w-full aspect-video bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400">No Img</div>
                               )}

@@ -1,14 +1,35 @@
 import Vertical from '../models/Vertical.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import slugify from 'slugify';
+import { getCached, setCached } from '../utils/simpleCache.js';
 
 export const getFeaturedVerticals = asyncHandler(async (req, res) => {
-  const verticals = await Vertical.find({ active: true, featured: true }).limit(4).sort({ featuredOrder: 1, createdAt: -1 });
+  const cacheKey = 'featured_verticals';
+  const cachedData = getCached(cacheKey);
+  
+  if (cachedData) {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).json({ success: true, data: cachedData });
+  }
+
+  const verticals = await Vertical.find({ active: true, featured: true }).limit(4).sort({ featuredOrder: 1, createdAt: -1 }).lean();
+  setCached(cacheKey, verticals, 300);
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: verticals });
 });
 
 export const getVerticals = asyncHandler(async (req, res) => {
-  const verticals = await Vertical.find({}).sort({ createdAt: 1 });
+  const cacheKey = `verticals_${JSON.stringify(req.query)}`;
+  const cachedData = getCached(cacheKey);
+  
+  if (cachedData) {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).json({ success: true, data: cachedData });
+  }
+
+  const verticals = await Vertical.find({}).sort({ createdAt: 1 }).lean();
+  setCached(cacheKey, verticals, 300);
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: verticals });
 });
 

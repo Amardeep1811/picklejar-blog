@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import Post from '../models/Post.js';
 import PostView from '../models/PostView.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { getCached, setCached } from '../utils/simpleCache.js';
 
 const escapeRegex = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -19,24 +20,96 @@ export const getPosts = asyncHandler(async (req, res) => {
     filter.vertical = req.query.vertical;
   }
   
-  let query = Post.find(filter).sort({ createdAt: -1 }).populate('vertical', 'name slug');
+  let query = Post.find(filter).sort({ createdAt: -1 }).populate('vertical', 'name slug').lean();
   
   if (req.query.limit) {
-    query = query.limit(parseInt(req.query.limit, 10));
+    query = query.limit(parseInt(req.query.limit, 10)).select('title slug excerpt bannerImage vertical publishDate status editorsPick');
   }
   if (req.query.skip) {
     query = query.skip(parseInt(req.query.skip, 10));
   }
-  
   const posts = await query;
   res.status(200).json({ success: true, data: posts });
 });
 
 export const getPost = asyncHandler(async (req, res) => {
-  const post = await Post.findOne({ slug: req.params.slug }).populate('vertical', 'name slug');
+  const cacheKey = `post_${req.params.slug}`;
+  const cachedData = getCached(cacheKey);
+  
+  if (cachedData) {
+    console.log(`[Cache] HIT for ${cacheKey}`);
+    
+    // Still track views on cache hit
+    const rawIp = req.ip || '';
+    const salt = process.env.IP_SALT || 'picklejar-ip-salt';
+    const ipHash = crypto.createHmac('sha256', salt).update(rawIp).digest('hex');
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    PostView.findOne({ post: cachedData._id, ipHash, timestamp: { $gte: oneDayAgo } })
+      .then(existingView => {
+        if (!existingView) PostView.create({ post: cachedData._id, ipHash });
+      }).catch(err => console.error('Failed to log post view:', err));
+
+    res.setHeader('Cache-Control', 'public, max-age=60');
+    return res.status(200).json({ success: true, data: cachedData });
+  }
+
+  console.log(`[Cache] MISS for ${cacheKey}`);
+  console.time('getPost-query');
+  const post = await Post.findOne({ slug: req.params.slug }).populate('vertical', 'name slug').lean();
+  console.timeEnd('getPost-query');
   if (!post) {
     res.status(404);
     throw new Error('Post not found');
+  }
+
+  // Fetch related posts (same vertical, excluding this post)
+  let relatedPosts = [];
+  let inArticleAds = [];
+  
+  if (post.vertical) {
+    const relatedPromise = Post.find({
+      status: 'published',
+      vertical: post.vertical._id,
+      _id: { $ne: post._id }
+    })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate('vertical', 'name slug')
+      .select('title slug excerpt bannerImage vertical publishDate status editorsPick')
+      .lean();
+
+    // Fetch in-article ads for this vertical
+    const now = new Date();
+    const adFilter = {
+      placement: 'in-article',
+      active: true,
+      targetVertical: { $in: [null, post.vertical._id] },
+      $and: [
+        { $or: [{ startDate: null }, { startDate: { $exists: false } }, { startDate: { $lte: now } }] },
+        { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gt: now } }] }
+      ]
+    };
+    const adsPromise = (await import('../models/Ad.js')).default.find(adFilter).sort({ createdAt: 1 }).lean();
+
+    const [relatedRes, adsRes] = await Promise.all([relatedPromise, adsPromise]);
+    relatedPosts = relatedRes;
+
+    // Pick ads pseudo-randomly based on postId hash
+    if (adsRes.length > 0) {
+      if (adsRes.length === 1) {
+        inArticleAds = [adsRes[0], adsRes[0]];
+      } else {
+        let hash = 0;
+        const postIdStr = post._id.toString();
+        for (let i = 0; i < postIdStr.length; i++) {
+          hash = (hash << 5) - hash + postIdStr.charCodeAt(i);
+          hash |= 0;
+        }
+        hash = Math.abs(hash);
+        const startIndex = hash % adsRes.length;
+        inArticleAds = [adsRes[startIndex], adsRes[(startIndex + 1) % adsRes.length]];
+      }
+    }
   }
   
   // Track view asynchronously on GET /api/posts/:slug with IP hashing and 24h deduplication
@@ -57,7 +130,14 @@ export const getPost = asyncHandler(async (req, res) => {
     console.error('Failed to log post view:', err);
   });
 
-  res.status(200).json({ success: true, data: post });
+  const responseData = { ...post, relatedPosts, inArticleAds };
+  
+  if (post.status === 'published') {
+    setCached(cacheKey, responseData, 60);
+    res.setHeader('Cache-Control', 'public, max-age=60');
+  }
+  
+  res.status(200).json({ success: true, data: responseData });
 });
 
 export const createPost = asyncHandler(async (req, res) => {
@@ -98,13 +178,21 @@ export const deletePost = asyncHandler(async (req, res) => {
 });
 
 export const searchPosts = asyncHandler(async (req, res) => {
+  const cacheKey = `search_${JSON.stringify(req.query)}`;
+  const cachedData = getCached(cacheKey);
+  
+  if (cachedData) {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).json({ success: true, data: cachedData });
+  }
+
   const { q, vertical, timeRange, limit = 10, skip = 0 } = req.query;
   const filter = { status: 'published' };
   
   if (q) {
     const escapedQ = escapeRegex(q);
     const mongoose = (await import('mongoose')).default;
-    const matchedVerticals = await mongoose.model('Vertical').find({ name: { $regex: escapedQ, $options: 'i' } });
+    const matchedVerticals = await mongoose.model('Vertical').find({ name: { $regex: escapedQ, $options: 'i' } }).lean();
     const verticalIds = matchedVerticals.map(v => v._id);
     
     filter.$or = [
@@ -137,7 +225,10 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .sort({ publishDate: -1, createdAt: -1 })
     .skip(parseInt(skip, 10))
     .limit(parseInt(limit, 10))
-    .populate('vertical', 'name slug');
+    .populate('vertical', 'name slug')
+    .lean();
     
+  setCached(cacheKey, posts, 300);
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: posts });
 });

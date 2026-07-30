@@ -19,7 +19,7 @@ export const getAds = asyncHandler(async (req, res) => {
     query = query.limit(parseInt(req.query.limit, 10));
   }
   
-  const ads = await query;
+  const ads = await query.lean();
   res.status(200).json({ success: true, data: ads });
 });
 
@@ -71,7 +71,7 @@ export const getInArticleAds = asyncHandler(async (req, res) => {
     ]
   };
 
-  const ads = await Ad.find(filter).sort({ createdAt: 1 });
+  const ads = await Ad.find(filter).sort({ createdAt: 1 }).lean();
   
   if (ads.length === 0) {
     return res.status(200).json({ success: true, data: [] });

@@ -6,6 +6,7 @@ import EditorJsRenderer from '../components/shared/EditorJsRenderer';
 import ArticleAdCard from '../components/shared/ArticleAdCard';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
+import { optimizeCloudinaryUrl } from '../utils/optimizeCloudinaryUrl';
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -26,26 +27,14 @@ export default function PostPage() {
         if (res.data.success) {
           const post = res.data.data;
           setData(post);
+          setRelatedPosts(post.relatedPosts || []);
           
-          if (post.vertical) {
-            // Fetch related posts (same vertical, up to 10 to ensure we have enough after excluding current)
-            const relRes = await axios.get(`/posts?status=published&vertical=${post.vertical._id}&limit=10`);
-            if (relRes.data.success) {
-              const filtered = relRes.data.data.filter(p => p._id !== post._id);
-              setRelatedPosts(filtered);
-            }
-
-            // Fetch in-article ads
-            try {
-              const adsRes = await axios.get(`/ads/in-article?vertical=${post.vertical._id}&postId=${post._id}`);
-              if (adsRes.data.success && adsRes.data.data.length >= 2) {
-                setInArticleAds([adsRes.data.data[0], adsRes.data.data[1]]);
-              } else if (adsRes.data.success && adsRes.data.data.length === 1) {
-                setInArticleAds([adsRes.data.data[0], adsRes.data.data[0]]);
-              }
-            } catch (adErr) {
-              console.error('Failed to load in-article ads', adErr);
-            }
+          if (post.inArticleAds && post.inArticleAds.length >= 2) {
+            setInArticleAds([post.inArticleAds[0], post.inArticleAds[1]]);
+          } else if (post.inArticleAds && post.inArticleAds.length === 1) {
+            setInArticleAds([post.inArticleAds[0], post.inArticleAds[0]]);
+          } else {
+            setInArticleAds([null, null]);
           }
         }
       } catch (err) {
@@ -121,9 +110,10 @@ export default function PostPage() {
       {data.bannerImage && (
         <div className="max-w-6xl mx-auto px-6 mb-12">
           <img 
-            src={data.bannerImage} 
+            src={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} 
             alt={data.title} 
-            className="w-full aspect-[21/9] object-cover object-center" 
+            className="w-full aspect-[21/9] object-cover object-center"
+            fetchPriority="high"
           />
         </div>
       )}
@@ -153,8 +143,12 @@ export default function PostPage() {
         {/* RIGHT SIDEBAR (STICKY) */}
         <aside className="lg:col-span-4 relative">
           <div className="sticky top-28 flex flex-col">
-            <ArticleAdCard ad={inArticleAds[0]} />
-            <ArticleAdCard ad={inArticleAds[1]} />
+            <div className="min-h-[400px]">
+              <ArticleAdCard ad={inArticleAds[0]} />
+            </div>
+            <div className="min-h-[400px]">
+              <ArticleAdCard ad={inArticleAds[1]} />
+            </div>
           </div>
         </aside>
 
@@ -179,7 +173,7 @@ export default function PostPage() {
                 className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -my-4"
               >
                 {post.bannerImage ? (
-                  <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-4 rounded-sm" />
+                  <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 400, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover mb-4 rounded-sm" loading="lazy" />
                 ) : (
                   <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-4 flex items-center justify-center text-gray-400 text-xs rounded-sm">No Image</div>
                 )}

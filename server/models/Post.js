@@ -16,6 +16,9 @@ const postSchema = new mongoose.Schema({
   isDummySeed: { type: Boolean, default: false },
 }, { timestamps: true });
 
+postSchema.index({ status: 1, vertical: 1, createdAt: -1 });
+postSchema.index({ status: 1, publishDate: -1 });
+
 postSchema.pre('validate', async function() {
   if (this.isModified('title') || !this.slug) {
     let baseSlug = slugify(this.title, { lower: true, strict: true });

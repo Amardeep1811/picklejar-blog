@@ -8,7 +8,7 @@ export const getLatestTrending = asyncHandler(async (req, res) => {
     .populate({
       path: 'posts',
       populate: { path: 'vertical', select: 'name slug' }
-    });
+    }).lean();
 
   if (!snapshot) {
     return res.status(200).json({ success: true, data: [] });

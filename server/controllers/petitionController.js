@@ -1,7 +1,16 @@
 import Petition from '../models/Petition.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { getCached, setCached } from '../utils/simpleCache.js';
 
 export const getPetitions = asyncHandler(async (req, res) => {
+  const cacheKey = `petitions_${JSON.stringify(req.query)}`;
+  const cachedData = getCached(cacheKey);
+  
+  if (cachedData) {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).json({ success: true, data: cachedData });
+  }
+
   const filter = {};
   if (req.query.active !== undefined) {
     filter.active = req.query.active === 'true';
@@ -13,7 +22,10 @@ export const getPetitions = asyncHandler(async (req, res) => {
     query = query.limit(parseInt(req.query.limit, 10));
   }
 
-  const petitions = await query;
+  const petitions = await query.lean();
+  
+  setCached(cacheKey, petitions, 300);
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: petitions });
 });
 

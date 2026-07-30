@@ -1,22 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from '../../api/axios';
 
-export default function SectionDividerAd() {
-  const [ad, setAd] = useState(null);
 
-  useEffect(() => {
-    const fetchAd = async () => {
-      try {
-        const res = await axios.get('/ads?placement=section-divider&active=true&limit=1');
-        if (res.data.success && res.data.data.length > 0) {
-          setAd(res.data.data[0]);
-        }
-      } catch (err) {
-        console.error('Failed to load section divider ad:', err);
-      }
-    };
-    fetchAd();
-  }, []);
+export default function SectionDividerAd({ data: ad }) {
 
   return (
     <div className="w-full my-12 h-[150px] lg:h-[200px]">

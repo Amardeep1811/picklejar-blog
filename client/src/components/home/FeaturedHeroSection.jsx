@@ -1,56 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from '../../api/axios';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import PostTitle from '../shared/Typography/PostTitle';
 import PostExcerpt from '../shared/Typography/PostExcerpt';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
-export default function FeaturedHeroSection({ vertical: inputVertical }) {
-  const [vertical, setVertical] = useState(inputVertical || null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        let targetVertical = inputVertical;
-
-        if (!targetVertical) {
-          const vertsRes = await axios.get('/verticals/featured');
-          if (vertsRes.data.success && vertsRes.data.data.length > 0) {
-            targetVertical = vertsRes.data.data[0]; // 1st-priority featured vertical (featuredOrder: 1)
-          }
-        }
-
-        if (targetVertical) {
-          setVertical(targetVertical);
-          const postsRes = await axios.get(`/posts?status=published&vertical=${targetVertical._id}&limit=9`);
-          if (postsRes.data.success) {
-            setPosts(postsRes.data.data);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load featured hero section:', err);
-        setError('Failed to load content.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [inputVertical]);
-
-  if (loading) return <LoadingSpinner />;
-
-  if (error) {
-    return (
-      <section className="mb-12 font-[var(--font-ui)]">
-        <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
-      </section>
-    );
-  }
+export default function FeaturedHeroSection({ data }) {
+  if (!data) return null;
+  const { vertical, posts } = data;
 
   if (!vertical || posts.length === 0) return null;
 
@@ -87,9 +42,10 @@ export default function FeaturedHeroSection({ vertical: inputVertical }) {
               <div className="w-full md:w-[50%] shrink-0 order-1 md:order-2">
                 {heroPost.bannerImage ? (
                   <img 
-                    src={heroPost.bannerImage} 
+                    src={optimizeCloudinaryUrl(heroPost.bannerImage, { width: 800, crop: 'fill' })} 
                     alt={heroPost.title} 
-                    className="w-full h-full object-cover rounded-sm shadow-sm" 
+                    className="w-full h-full object-cover rounded-sm shadow-sm"
+                    fetchPriority="high"
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 rounded-sm">
@@ -116,7 +72,7 @@ export default function FeaturedHeroSection({ vertical: inputVertical }) {
                     </div>
                     <div className="w-2/5 shrink-0">
                       {post.bannerImage ? (
-                        <img src={post.bannerImage} alt={post.title} className="w-full h-full object-cover rounded-sm shadow-sm" />
+                        <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 400, crop: 'fill' })} alt={post.title} className="w-full h-full object-cover rounded-sm shadow-sm" loading="lazy" />
                       ) : (
                         <div className="w-full h-full bg-gray-100 border border-[var(--line)] flex items-center justify-center text-[10px] text-gray-400 rounded-sm">No Img</div>
                       )}
@@ -142,7 +98,7 @@ export default function FeaturedHeroSection({ vertical: inputVertical }) {
               >
                 <div className="mb-3">
                   {post.bannerImage ? (
-                    <img src={post.bannerImage} alt={post.title} className="w-full aspect-[16/10] object-cover rounded-sm" />
+                    <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 600, crop: 'fill' })} alt={post.title} className="w-full aspect-[16/10] object-cover rounded-sm" loading="lazy" />
                   ) : (
                     <div className="w-full aspect-[16/10] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Image</div>
                   )}

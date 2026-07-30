@@ -1,58 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from '../../api/axios';
-import LoadingSpinner from '../shared/LoadingSpinner';
 import PostTitle from '../shared/Typography/PostTitle';
 import PostExcerpt from '../shared/Typography/PostExcerpt';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
-export default function FeaturedVerticalSection({ vertical: inputVertical }) {
-  const [vertical, setVertical] = useState(inputVertical || null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function FeaturedVerticalSection({ data }) {
+  if (!data) return null;
+  const { vertical, posts } = data;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        let targetVertical = inputVertical;
-
-        if (!targetVertical) {
-          const vertsRes = await axios.get('/verticals/featured');
-          if (vertsRes.data.success && vertsRes.data.data.length > 1) {
-            targetVertical = vertsRes.data.data[1]; // 2nd-priority featured vertical (featuredOrder: 2)
-          } else if (vertsRes.data.success && vertsRes.data.data.length > 0) {
-            targetVertical = vertsRes.data.data[0];
-          }
-        }
-
-        if (targetVertical) {
-          setVertical(targetVertical);
-          const postsRes = await axios.get(`/posts?status=published&vertical=${targetVertical._id}&limit=7`);
-          if (postsRes.data.success) {
-            setPosts(postsRes.data.data);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load featured vertical section:', err);
-        setError('Failed to load content.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [inputVertical]);
-
-  if (loading) return <LoadingSpinner />;
-
-  if (error) {
-    return (
-      <section className="mb-12 font-[var(--font-ui)]">
-        <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
-      </section>
-    );
-  }
 
   if (!vertical || posts.length === 0) return null;
 
@@ -86,7 +40,7 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
               {/* IMAGE COLUMN */}
               <div className="w-full md:w-[55%] shrink-0">
                 {largePost.bannerImage ? (
-                  <img src={largePost.bannerImage} alt={largePost.title} className="w-full aspect-[16/9] object-cover rounded-sm" />
+                  <img src={optimizeCloudinaryUrl(largePost.bannerImage, { width: 800, crop: 'fill' })} alt={largePost.title} className="w-full aspect-[16/9] object-cover rounded-sm" loading="lazy" />
                 ) : (
                   <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-gray-400 rounded-sm">No Image</div>
                 )}
@@ -106,7 +60,7 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
                     <div className="flex gap-4">
                       <div className="w-[120px] shrink-0">
                         {post.bannerImage ? (
-                          <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
+                          <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 300, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" loading="lazy" />
                         ) : (
                           <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
                         )}
@@ -133,7 +87,7 @@ export default function FeaturedVerticalSection({ vertical: inputVertical }) {
                   className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3"
                 >
                   {post.bannerImage ? (
-                    <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-3 rounded-sm" />
+                    <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 400, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover mb-3 rounded-sm" loading="lazy" />
                   ) : (
                     <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
                   )}
