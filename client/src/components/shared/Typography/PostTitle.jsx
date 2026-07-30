@@ -1,4 +1,4 @@
-export default function PostTitle({ title, size = 'medium', className = '' }) {
+export default function PostTitle({ title, size = 'medium', className = '', as = 'h3' }) {
   const baseClasses = "font-[var(--font-heading)] font-bold text-[var(--ink)] group-hover:text-[var(--green-dark)] transition-colors";
   
   const sizeClasses = {
@@ -8,9 +8,11 @@ export default function PostTitle({ title, size = 'medium', className = '' }) {
     headline: "text-[15px] leading-[1.15]"
   };
 
+  const Component = as;
+
   return (
-    <h3 className={`${baseClasses} ${sizeClasses[size] || sizeClasses.medium} ${className}`}>
+    <Component className={`${baseClasses} ${sizeClasses[size] || sizeClasses.medium} ${className}`}>
       {title}
-    </h3>
+    </Component>
   );
 }

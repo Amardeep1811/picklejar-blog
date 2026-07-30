@@ -36,13 +36,13 @@ export default function FeaturedHeroSection({ data }) {
               className="group flex flex-col md:flex-row items-stretch gap-8 transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -mt-4 h-full"
             >
               <div className="w-full md:w-[50%] flex flex-col justify-start order-2 md:order-1">
-                <PostTitle title={heroPost.title} size="hero" className="mb-4 leading-tight text-4xl" />
+                <PostTitle title={heroPost.title} size="hero" as="h1" className="mb-4 leading-tight text-4xl" />
                 <PostExcerpt excerpt={heroPost.excerpt} size="large" className="text-gray-600 leading-relaxed" />
               </div>
               <div className="w-full md:w-[50%] shrink-0 order-1 md:order-2">
                 {heroPost.bannerImage ? (
                   <img 
-                    src={optimizeCloudinaryUrl(heroPost.bannerImage, { width: 800, crop: 'fill' })} 
+                    src={optimizeCloudinaryUrl(heroPost.bannerImage, { width: 460, crop: 'fill' })} 
                     alt={heroPost.title} 
                     className="w-full h-full object-cover rounded-sm shadow-sm"
                     fetchPriority="high"

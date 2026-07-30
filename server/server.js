@@ -42,22 +42,14 @@ const app = express();
 // Trust proxy settings (Render reverse proxy)
 app.set('trust proxy', 1);
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    console.log(`[TIMING] ${req.method} ${req.originalUrl} - ${Date.now() - start}ms`);
-  });
-  next();
-});
-
 // Basic Security Headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com"],
+      scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://*.placeholder.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
       connectSrc: ["'self'", "https://api.cloudinary.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],

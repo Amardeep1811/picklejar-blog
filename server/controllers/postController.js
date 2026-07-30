@@ -37,8 +37,6 @@ export const getPost = asyncHandler(async (req, res) => {
   const cachedData = getCached(cacheKey);
   
   if (cachedData) {
-    console.log(`[Cache] HIT for ${cacheKey}`);
-    
     // Still track views on cache hit
     const rawIp = req.ip || '';
     const salt = process.env.IP_SALT || 'picklejar-ip-salt';
@@ -53,10 +51,7 @@ export const getPost = asyncHandler(async (req, res) => {
     return res.status(200).json({ success: true, data: cachedData });
   }
 
-  console.log(`[Cache] MISS for ${cacheKey}`);
-  console.time('getPost-query');
   const post = await Post.findOne({ slug: req.params.slug }).populate('vertical', 'name slug').lean();
-  console.timeEnd('getPost-query');
   if (!post) {
     res.status(404);
     throw new Error('Post not found');

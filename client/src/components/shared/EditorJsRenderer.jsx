@@ -29,7 +29,7 @@ export default function EditorJsRenderer({ blocks }) {
               <figure key={index} className="my-6">
                 <img 
                   src={block.data.file.url} 
-                  alt={block.data.caption || 'Image'} 
+                  alt={block.data.caption || 'Post illustration'} 
                   className="rounded w-full h-auto object-cover" 
                 />
                 {block.data.caption && <figcaption className="text-sm text-gray-500 mt-2 text-center">{block.data.caption}</figcaption>}

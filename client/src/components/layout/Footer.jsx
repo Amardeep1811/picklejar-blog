@@ -22,13 +22,20 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--ink)] text-[#c9c6ba] mt-16 font-[var(--font-ui)]">
       <div className="max-w-[1440px] mx-auto p-14 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-[220px]">
           <h5 className="text-[11.5px] tracking-[1.4px] text-[var(--gold)] mb-4 font-semibold">SECTIONS</h5>
-          {verticals.map(v => (
-            <Link key={v._id} to={`/${v.slug}`} className="text-[14.5px] text-[#e5e2d5] mb-3 opacity-85 hover:opacity-100 hover:pl-1 hover:text-white transition-all duration-200">
-              {v.name}
-            </Link>
-          ))}
+          {verticals.length === 0 ? (
+            // Skeleton loaders for CLS mitigation
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-[20px] w-24 bg-[#3a3d34] rounded-sm mb-3 animate-pulse"></div>
+            ))
+          ) : (
+            verticals.map(v => (
+              <Link key={v._id} to={`/${v.slug}`} className="text-[14.5px] text-[#e5e2d5] mb-3 opacity-85 hover:opacity-100 hover:pl-1 hover:text-white transition-all duration-200">
+                {v.name}
+              </Link>
+            ))
+          )}
         </div>
         <div className="flex flex-col">
           <h5 className="text-[11.5px] tracking-[1.4px] text-[var(--gold)] mb-4 font-semibold">COMPANY</h5>

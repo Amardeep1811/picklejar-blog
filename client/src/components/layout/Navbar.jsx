@@ -174,7 +174,7 @@ export default function Navbar() {
         ></div>
         <div className={`relative w-72 h-full bg-[var(--green)] shadow-xl transform transition-transform duration-300 ease-out flex flex-col p-6 text-[var(--bg)] font-[var(--font-ui)] ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="flex justify-end mb-8">
-            <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-[var(--bg)] hover:text-white transition-colors">
+            <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" className="p-2 text-[var(--bg)] hover:text-white transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
