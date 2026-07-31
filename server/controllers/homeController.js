@@ -63,7 +63,6 @@ export const getHomeData = asyncHandler(async (req, res) => {
   const featuredVerticals = allVerticals.filter(v => v.featured);
   const sportsVertical = allVerticals.find(v => v.slug === 'sports');
   const targetVertA = featuredVerticals.find(v => v.featuredOrder === 3) || null;
-  const targetVertB = featuredVerticals.find(v => v.featuredOrder === 4) || null;
   const targetHeroVert = featuredVerticals.find(v => v.featuredOrder === 1) || featuredVerticals[0] || null;
   const targetVertSec = featuredVerticals.find(v => v.featuredOrder === 2) || (featuredVerticals.length > 1 ? featuredVerticals[1] : featuredVerticals[0]) || null;
 
@@ -81,15 +80,11 @@ export const getHomeData = asyncHandler(async (req, res) => {
     postPromises.push(Post.find({ status: 'published', vertical: targetVertA._id }).sort({ createdAt: -1 }).limit(4).populate('vertical', 'name slug').select('title slug excerpt bannerImage vertical publishDate status editorsPick').lean());
   } else postPromises.push(Promise.resolve([]));
 
-  if (targetVertB) {
-    postPromises.push(Post.find({ status: 'published', vertical: targetVertB._id }).sort({ createdAt: -1 }).limit(3).populate('vertical', 'name slug').select('title slug excerpt bannerImage vertical publishDate status editorsPick').lean());
-  } else postPromises.push(Promise.resolve([]));
-
   if (sportsVertical) {
     postPromises.push(Post.find({ status: 'published', vertical: sportsVertical._id }).sort({ createdAt: -1 }).limit(7).populate('vertical', 'name slug').select('title slug excerpt bannerImage vertical publishDate status editorsPick').lean());
   } else postPromises.push(Promise.resolve([]));
 
-  const [heroPosts, vertSecPosts, vertAPosts, vertBPosts, sportsPosts] = await Promise.all(postPromises);
+  const [heroPosts, vertSecPosts, vertAPosts, sportsPosts] = await Promise.all(postPromises);
 
   const responseData = {
     trending: trendingPosts,
@@ -97,7 +92,6 @@ export const getHomeData = asyncHandler(async (req, res) => {
     heroVertical: targetHeroVert ? { vertical: targetHeroVert, posts: heroPosts } : null,
     featuredVertical: targetVertSec ? { vertical: targetVertSec, posts: vertSecPosts } : null,
     featuredVertA: targetVertA ? { vertical: targetVertA, posts: vertAPosts } : null,
-    featuredVertB: targetVertB ? { vertical: targetVertB, posts: vertBPosts } : null,
     sports: sportsVertical ? { vertical: sportsVertical, posts: sportsPosts, petitions: sportsPetitions } : null,
     ads: {
       sidebar: sidebarAd.length ? sidebarAd[0] : null,

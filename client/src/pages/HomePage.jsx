@@ -6,7 +6,6 @@ import FeaturedVerticalSection from '../components/home/FeaturedVerticalSection'
 import MoreStoriesSection from '../components/home/MoreStoriesSection';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
 import SportsSection from '../components/home/SportsSection';
-import NewsletterSection from '../components/home/NewsletterSection';
 import HomeSkeleton from '../components/home/HomeSkeleton';
 
 export default function HomePage() {
@@ -50,12 +49,11 @@ export default function HomePage() {
             <FeaturedHeroSection data={homeData.heroVertical} />
             <FeaturedVerticalSection data={homeData.featuredVertical} />
             <SectionDividerAd data={homeData.ads?.sectionDivider} />
-            <MoreStoriesSection data={homeData.moreStories} vertAData={homeData.featuredVertA} vertBData={homeData.featuredVertB} adData={homeData.ads?.sidebar} />
+            <MoreStoriesSection data={homeData.moreStories} vertAData={homeData.featuredVertA} adData={homeData.ads?.sidebar} />
           </div>
         </div>
         
         <SportsSection data={homeData.sports} />
-        <NewsletterSection />
       </div>
     </>
   );

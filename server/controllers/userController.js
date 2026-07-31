@@ -35,6 +35,7 @@ export const createUser = asyncHandler(async (req, res) => {
 });
 
 export const getUsers = asyncHandler(async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   const users = await User.find({}).select('-password').sort({ createdAt: -1 });
   res.status(200).json({ success: true, data: users });
 });

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from '../../api/axios';
 
-export default function NewsletterSection() {
+export default function NewsletterSection({ compact = false }) {
   const [email, setEmail] = useState('');
   const [subStatus, setSubStatus] = useState('');
   const [subLoading, setSubLoading] = useState(false);
@@ -22,6 +22,37 @@ export default function NewsletterSection() {
       setSubLoading(false);
     }
   };
+
+  if (compact) {
+    return (
+      <div className="w-full font-[var(--font-ui)]">
+        {subStatus === 'success' ? (
+          <div className="bg-[var(--green)]/20 border border-[var(--green)] text-white p-4 text-center font-bold rounded-sm">
+            Thanks for subscribing!
+          </div>
+        ) : (
+          <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
+            <input 
+              type="email" 
+              placeholder="Email address" 
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-white/10 border border-[#2b3122] p-4 text-white focus:outline-none focus:border-[var(--green)] transition-colors rounded-sm text-base"
+            />
+            <button 
+              type="submit" 
+              disabled={subLoading}
+              className="w-full bg-[var(--green)] hover:bg-[var(--green-dark)] text-white font-bold py-4 px-8 transition-colors disabled:opacity-70 rounded-sm text-base"
+            >
+              {subLoading ? 'Submitting...' : 'Sign Up'}
+            </button>
+          </form>
+        )}
+        {subStatus && subStatus !== 'success' && <div className="text-red-400 text-xs mt-2 text-center">{subStatus}</div>}
+      </div>
+    );
+  }
 
   return (
     <section className="font-[var(--font-ui)] w-full mb-12">

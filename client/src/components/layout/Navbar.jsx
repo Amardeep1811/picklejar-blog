@@ -8,8 +8,22 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const moreTimeoutRef = useRef(null);
+
+  const handleMoreEnter = () => {
+    if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    setMoreOpen(true);
+    setSearchOpen(false);
+  };
+
+  const handleMoreLeave = () => {
+    moreTimeoutRef.current = setTimeout(() => {
+      setMoreOpen(false);
+    }, 200);
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -88,17 +102,34 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden xl:flex items-center text-[#f2eee2]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "11px", letterSpacing: "0.9px", fontWeight: 600, gap: "18px" }}>
-            {verticals.map(v => (
+            {verticals.slice(0, 9).map(v => (
               <Link
                 key={v._id}
                 to={`/${v.slug}`}
-                onClick={() => setSearchOpen(false)}
+                onClick={() => { setSearchOpen(false); setMoreOpen(false); }}
                 className="relative group py-1 uppercase text-[#f2eee2]"
               >
                 {v.name}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--green)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
+            {verticals.length > 9 && (
+              <button
+                onMouseEnter={handleMoreEnter}
+                onMouseLeave={handleMoreLeave}
+                onClick={() => {
+                  setMoreOpen(!moreOpen);
+                  setSearchOpen(false);
+                }}
+                className={`relative group py-1 uppercase transition-colors ${moreOpen ? 'text-[var(--green)]' : 'text-[#f2eee2]'}`}
+              >
+                MORE
+                <svg xmlns="http://www.w3.org/2000/svg" className={`inline-block w-3 h-3 ml-1 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--green)] transition-all duration-300 group-hover:w-full"></span>
+              </button>
+            )}
           </div>
 
           <div className="flex items-center space-x-3 sm:space-x-6">
@@ -106,6 +137,7 @@ export default function Navbar() {
               className="text-[#f2eee2] opacity-85 hover:opacity-100 hover:text-[var(--green)] p-1 transition-colors"
               onClick={() => {
                 setSearchOpen(!searchOpen);
+                setMoreOpen(false);
                 if (mobileMenuOpen) setMobileMenuOpen(false);
               }}
               aria-label="Toggle Search"
@@ -137,6 +169,28 @@ export default function Navbar() {
             </button>
           </div>
         </nav>
+
+        {/* More Dropdown Panel */}
+        <div 
+          className={`hidden xl:block absolute top-full left-0 w-full bg-[#111] overflow-hidden transition-all duration-250 ease-in-out z-40 ${moreOpen ? 'max-h-96 opacity-100 py-6 px-6 border-b border-gray-800' : 'max-h-0 opacity-0 py-0 px-6'}`}
+          onMouseEnter={handleMoreEnter}
+          onMouseLeave={handleMoreLeave}
+        >
+          <div className="max-w-[1440px] mx-auto px-6">
+            <div className="flex flex-wrap gap-x-8 gap-y-4 text-[#f2eee2]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "11px", letterSpacing: "0.9px", fontWeight: 600 }}>
+              {verticals.map(v => (
+                <Link
+                  key={v._id}
+                  to={`/${v.slug}`}
+                  onClick={() => setMoreOpen(false)}
+                  className="relative group py-1 uppercase text-[#f2eee2] hover:text-[var(--green)] transition-colors"
+                >
+                  {v.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Search Dropdown Panel */}
         <div className={`absolute top-full left-0 w-full bg-[#111] overflow-hidden transition-all duration-250 ease-in-out z-40 ${searchOpen ? 'max-h-96 opacity-100 py-8 px-6 border-b border-gray-800' : 'max-h-0 opacity-0 py-0 px-6'}`}>

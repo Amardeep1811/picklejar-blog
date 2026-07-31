@@ -2,6 +2,7 @@ import Ad from '../models/Ad.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 export const getAds = asyncHandler(async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   const filter = {};
   if (req.query.placement) {
     filter.placement = req.query.placement;

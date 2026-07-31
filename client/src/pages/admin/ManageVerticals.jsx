@@ -183,7 +183,7 @@ export default function ManageVerticals() {
                       max="4"
                       className="w-14 bg-gray-900 border border-gray-600 rounded px-2 py-0.5 text-center text-sm font-bold text-yellow-400 focus:outline-none focus:border-yellow-500"
                       value={formData.featuredOrder}
-                      onChange={e => setFormData({...formData, featuredOrder: Math.min(4, Math.max(1, parseInt(e.target.value) || 1))})}
+                      onChange={e => setFormData({...formData, featuredOrder: Math.min(3, Math.max(1, parseInt(e.target.value) || 1))})}
                     />
                   </div>
                 )}

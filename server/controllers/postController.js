@@ -9,6 +9,7 @@ const escapeRegex = (string) => {
 };
 
 export const getPosts = asyncHandler(async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   const filter = {};
   if (req.query.editorsPick !== undefined) {
     filter.editorsPick = req.query.editorsPick === 'true';

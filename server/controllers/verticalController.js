@@ -1,7 +1,7 @@
 import Vertical from '../models/Vertical.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import slugify from 'slugify';
-import { getCached, setCached } from '../utils/simpleCache.js';
+import { getCached, setCached, clearCache } from '../utils/simpleCache.js';
 
 export const getFeaturedVerticals = asyncHandler(async (req, res) => {
   const cacheKey = 'featured_verticals';
@@ -12,7 +12,7 @@ export const getFeaturedVerticals = asyncHandler(async (req, res) => {
     return res.status(200).json({ success: true, data: cachedData });
   }
 
-  const verticals = await Vertical.find({ active: true, featured: true }).limit(4).sort({ featuredOrder: 1, createdAt: -1 }).lean();
+  const verticals = await Vertical.find({ active: true, featured: true }).limit(3).sort({ featuredOrder: 1, createdAt: -1 }).lean();
   setCached(cacheKey, verticals, 300);
   res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: verticals });
@@ -40,9 +40,9 @@ export const createVertical = asyncHandler(async (req, res) => {
 
   if (featured) {
     const featuredCount = await Vertical.countDocuments({ featured: true });
-    if (featuredCount >= 4) {
+    if (featuredCount >= 3) {
       res.status(400);
-      throw new Error('Only 4 verticals can be featured at once — unfeature one first');
+      throw new Error('Only 3 verticals can be featured at once — unfeature one first');
     }
 
     const existingFeatured = await Vertical.findOne({ featured: true, featuredOrder: orderToUse });
@@ -62,6 +62,8 @@ export const createVertical = asyncHandler(async (req, res) => {
       collection: vertical.collection.name
     });
   }
+  clearCache('verticals');
+  clearCache('featured_verticals');
   res.status(201).json({ success: true, message: 'Vertical created', data: vertical });
 });
 
@@ -119,6 +121,8 @@ export const updateVertical = asyncHandler(async (req, res) => {
   }
   
   const updatedVertical = await vertical.save();
+  clearCache('verticals');
+  clearCache('featured_verticals');
   res.status(200).json({ success: true, message: 'Vertical updated', data: updatedVertical });
 });
 
@@ -129,5 +133,7 @@ export const deleteVertical = asyncHandler(async (req, res) => {
     throw new Error('Vertical not found');
   }
   await vertical.deleteOne();
+  clearCache('verticals');
+  clearCache('featured_verticals');
   res.status(200).json({ success: true, message: 'Vertical deleted' });
 });
