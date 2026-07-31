@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import VerticalPageSkeleton from '../components/shared/VerticalPageSkeleton';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
@@ -72,7 +72,7 @@ export default function VerticalPage() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <VerticalPageSkeleton />;
   
   if (error) {
     return (

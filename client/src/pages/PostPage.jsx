@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import PostPageSkeleton from '../components/shared/PostPageSkeleton';
 import EditorJsRenderer from '../components/shared/EditorJsRenderer';
 import ArticleAdCard from '../components/shared/ArticleAdCard';
 import PostTitle from '../components/shared/Typography/PostTitle';
@@ -46,7 +46,7 @@ export default function PostPage() {
     fetchData();
   }, [postSlug]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PostPageSkeleton />;
   
   if (error) {
     return (

@@ -7,7 +7,7 @@ import MoreStoriesSection from '../components/home/MoreStoriesSection';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
 import SportsSection from '../components/home/SportsSection';
 import NewsletterSection from '../components/home/NewsletterSection';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import HomeSkeleton from '../components/home/HomeSkeleton';
 
 export default function HomePage() {
   const [homeData, setHomeData] = useState(null);
@@ -31,7 +31,7 @@ export default function HomePage() {
     fetchHomeData();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <HomeSkeleton />;
   
   if (error) {
     return (
