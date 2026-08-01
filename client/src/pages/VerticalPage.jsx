@@ -87,10 +87,6 @@ export default function VerticalPage() {
   const heroPost = posts[0];
   const gridPosts = posts.slice(1, 7);
   const listPosts = posts.slice(7, 15);
-  
-  // Split remaining into two columns
-  const colA = listPosts.slice(0, Math.ceil(listPosts.length / 2));
-  const colB = listPosts.slice(Math.ceil(listPosts.length / 2));
 
   return (
     <div className="bg-white min-h-screen">
@@ -157,64 +153,37 @@ export default function VerticalPage() {
             {/* SECTION 2: Two-Column Dense List */}
             {listPosts.length > 0 && (
               <section className="mb-12 border-t-[3px] border-[var(--ink)] pt-8">
-                <div className="flex flex-col lg:flex-row gap-12">
-                  
-                  {/* Column A */}
-                  <div className="w-full lg:w-1/2 flex flex-col lg:pr-12 lg:border-r border-[var(--line)]">
-                    <div className="flex flex-col">
-                      {colA.map((post, idx) => (
-                        <div key={post._id} className={idx !== 0 ? 'border-t border-[var(--line)] py-4' : 'pb-4 pt-0'}>
-                          <Link 
-                            to={`/${vertical.slug}/${post.slug}`} 
-                            className="group flex gap-5 items-center transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
-                          >
-                            <div className="w-[120px] shrink-0">
-                              {post.bannerImage ? (
-                                <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
-                              ) : (
-                                <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
-                              )}
+                <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-0 lg:after:absolute lg:after:top-0 lg:after:bottom-0 lg:after:left-1/2 lg:after:-translate-x-1/2 lg:after:w-[1px] lg:after:bg-[var(--line)] lg:after:content-['']">
+                  {listPosts.map((post, idx) => {
+                    const isLastRow = idx >= listPosts.length - (listPosts.length % 2 === 0 ? 2 : 1);
+                    return (
+                      <div 
+                        key={post._id} 
+                        className={`py-4 ${!isLastRow ? 'border-b border-[var(--line)]' : ''}`}
+                      >
+                        <Link 
+                          to={`/${vertical.slug}/${post.slug}`} 
+                          className="group flex gap-5 items-center transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 h-full"
+                        >
+                          <div className="w-[120px] shrink-0">
+                            {post.bannerImage ? (
+                              <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
+                            ) : (
+                              <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
+                            )}
+                          </div>
+                          <div className="flex flex-col flex-1">
+                            <div className="mb-2 overflow-hidden">
+                              <PostTitle title={post.title} size="medium" className="line-clamp-2" />
                             </div>
-                            <div className="flex flex-col">
-                              <div className="h-[44px] mb-2 overflow-hidden">
-                                <PostTitle title={post.title} size="medium" className="line-clamp-2" />
-                              </div>
-                              <PostExcerpt excerpt={post.excerpt} size="small" />
+                            <div style={{ height: '68.25px' }} className="overflow-hidden">
+                              <PostExcerpt excerpt={post.excerpt} size="small" className="line-clamp-3" />
                             </div>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Column B */}
-                  <div className="w-full lg:w-1/2 flex flex-col">
-                    <div className="flex flex-col">
-                      {colB.map((post, idx) => (
-                        <div key={post._id} className={idx !== 0 ? 'border-t border-[var(--line)] py-4' : 'pb-4 pt-0'}>
-                          <Link 
-                            to={`/${vertical.slug}/${post.slug}`} 
-                            className="group flex gap-5 items-center transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3"
-                          >
-                            <div className="w-[120px] shrink-0">
-                              {post.bannerImage ? (
-                                <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
-                              ) : (
-                                <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
-                              )}
-                            </div>
-                            <div className="flex flex-col">
-                              <div className="h-[44px] mb-2 overflow-hidden">
-                                <PostTitle title={post.title} size="medium" className="line-clamp-2" />
-                              </div>
-                              <PostExcerpt excerpt={post.excerpt} size="small" />
-                            </div>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
