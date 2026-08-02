@@ -60,19 +60,27 @@ export default function ManagePosts() {
     }
   };
 
-  const handleEditClick = (post) => {
-    setIsEditing(true);
-    setEditingId(post._id);
-    setFormData({
-      title: post.title,
-      vertical: post.vertical._id || post.vertical,
-      excerpt: post.excerpt || '',
-      bannerImage: post.bannerImage || '',
-      status: post.status,
-      editorsPick: post.editorsPick || false,
-      body: post.body || { blocks: [] }
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleEditClick = async (post) => {
+    try {
+      const res = await axios.get(`/posts/${post.slug}`);
+      if (res.data.success) {
+        const fullPost = res.data.data;
+        setIsEditing(true);
+        setEditingId(fullPost._id);
+        setFormData({
+          title: fullPost.title,
+          vertical: fullPost.vertical._id || fullPost.vertical,
+          excerpt: fullPost.excerpt || '',
+          bannerImage: fullPost.bannerImage || '',
+          status: fullPost.status,
+          editorsPick: fullPost.editorsPick || false,
+          body: fullPost.body || { blocks: [] }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to fetch full post data');
+    }
   };
 
   const handleDelete = async (id) => {

@@ -20,6 +20,7 @@ export const getHomeData = asyncHandler(async (req, res) => {
     .sort({ computedAt: -1 })
     .populate({
       path: 'posts',
+      select: 'title slug excerpt bannerImage vertical publishDate status editorsPick',
       populate: { path: 'vertical', select: 'name slug' }
     }).lean();
 

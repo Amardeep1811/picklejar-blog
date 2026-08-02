@@ -2,18 +2,24 @@ import Ad from '../models/Ad.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 export const getAds = asyncHandler(async (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
+  const isStaff = req.user && ['admin', 'editor'].includes(req.user.role);
   const filter = {};
-  if (req.query.placement) {
-    filter.placement = req.query.placement;
-  }
-  if (req.query.type) {
-    filter.type = req.query.type;
-  }
-  if (req.query.active !== undefined) {
-    filter.active = req.query.active === 'true';
+
+  if (req.query.placement) filter.placement = req.query.placement;
+  if (req.query.type) filter.type = req.query.type;
+
+  if (isStaff) {
+    if (req.query.active !== undefined) filter.active = req.query.active === 'true';
+  } else {
+    const now = new Date();
+    filter.active = true;
+    filter.$and = [
+      { $or: [{ startDate: null }, { startDate: { $exists: false } }, { startDate: { $lte: now } }] },
+      { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gte: now } }] }
+    ];
   }
 
+  res.setHeader('Cache-Control', 'no-store');
   let query = Ad.find(filter).sort({ createdAt: -1 });
   
   if (req.query.limit) {

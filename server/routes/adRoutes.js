@@ -3,13 +3,14 @@ const router = express.Router();
 import { getAds, createAd, updateAd, deleteAd, getInArticleAds } from '../controllers/adController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import role from '../middleware/roleMiddleware.js';
+import optionalAuth from '../middleware/optionalAuth.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { adSchema } from '../validators/adValidator.js';
 
 router.route('/in-article').get(getInArticleAds);
 
 router.route('/')
-  .get(getAds)
+  .get(optionalAuth, getAds)
   .post(protect, role(['admin']), validate(adSchema), createAd);
 
 router.route('/:id')

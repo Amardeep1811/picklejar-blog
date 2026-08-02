@@ -1,2 +1,6 @@
 .env
 node_modules
+check_db_data.js
+check_indexes.js
+find_link_post_http.js
+find_link_post.js

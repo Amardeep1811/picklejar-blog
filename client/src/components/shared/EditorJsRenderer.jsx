@@ -1,6 +1,20 @@
 import React from 'react';
 import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
+const ALLOWED_EMBED_HOSTS = [
+  'youtube.com', 'www.youtube.com', 'youtube-nocookie.com',
+  'vimeo.com', 'player.vimeo.com'
+];
+
+function isAllowedEmbed(url) {
+  try {
+    const host = new URL(url).hostname;
+    return ALLOWED_EMBED_HOSTS.some(allowed => host === allowed || host.endsWith(`.${allowed}`));
+  } catch {
+    return false;
+  }
+}
+
 export default function EditorJsRenderer({ blocks }) {
   if (!blocks || !Array.isArray(blocks)) return null;
 
@@ -43,6 +57,7 @@ export default function EditorJsRenderer({ blocks }) {
               </blockquote>
             );
           case 'embed':
+            if (!isAllowedEmbed(block.data.embed)) return null;
             return (
               <div key={index} className="my-6 aspect-video">
                 <iframe
