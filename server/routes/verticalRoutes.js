@@ -5,9 +5,10 @@ import { protect } from '../middleware/authMiddleware.js';
 import role from '../middleware/roleMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { verticalSchema } from '../validators/verticalValidator.js';
+import optionalAuth from '../middleware/optionalAuth.js';
 
 router.route('/')
-  .get(getVerticals)
+  .get(optionalAuth, getVerticals)
   .post(protect, role(['admin']), validate(verticalSchema), createVertical);
 
 router.route('/featured')

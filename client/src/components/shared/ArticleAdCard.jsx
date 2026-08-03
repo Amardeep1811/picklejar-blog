@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function ArticleAdCard({ ad }) {
   const [buttonColor, setButtonColor] = useState('var(--green)');
@@ -70,7 +71,7 @@ export default function ArticleAdCard({ ad }) {
       {ad.image ? (
         <div className="w-full aspect-[4/3] mb-4 overflow-hidden bg-gray-100 rounded-md">
           <img 
-            src={ad.image} 
+            src={optimizeCloudinaryUrl(ad.image, { width: 600, crop: 'fill' })} 
             alt={ad.ctaText || 'Advertisement'} 
             crossOrigin="anonymous"
             onLoad={handleImageLoad}

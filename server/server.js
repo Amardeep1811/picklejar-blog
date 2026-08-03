@@ -106,6 +106,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// TEMPORARY: Test route for Sentry verification
+app.get('/api/test-sentry-error', (req, res) => {
+  throw new Error('Sentry Test Error from WalletPickle backend');
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

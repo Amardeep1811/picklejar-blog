@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/shared/LoadingSpinner';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
+import { optimizeCloudinaryUrl } from '../utils/optimizeCloudinaryUrl';
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -212,7 +213,7 @@ export default function SearchPage() {
                   <div className="w-full sm:w-[180px] shrink-0">
                     <Link to={`/${post.vertical?.slug || 'vertical'}/${post.slug}`}>
                       {post.bannerImage ? (
-                        <img src={post.bannerImage} alt={post.title} className="w-full aspect-video object-cover rounded-sm border border-[var(--line)]" />
+                        <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 360, crop: 'fill' })} alt={post.title} className="w-full aspect-video object-cover rounded-sm border border-[var(--line)]" />
                       ) : (
                         <div className="w-full aspect-video bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
                       )}

@@ -76,6 +76,9 @@ export default function PostPage() {
         <meta name="description" content={data.excerpt || data.title} />
         <meta property="og:title" content={`${data.title} - WalletPickle`} />
         <meta property="og:description" content={data.excerpt || data.title} />
+        {data.bannerImage && <meta property="og:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
+        <meta property="og:url" content={window.location.href} />
+        <link rel="canonical" href={window.location.href} />
       </Helmet>
       
       {/* HEADER AREA */}

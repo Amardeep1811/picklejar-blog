@@ -19,7 +19,8 @@ export const getFeaturedVerticals = asyncHandler(async (req, res) => {
 });
 
 export const getVerticals = asyncHandler(async (req, res) => {
-  const cacheKey = `verticals_${JSON.stringify(req.query)}`;
+  const isStaff = req.user && ['admin', 'editor'].includes(req.user.role);
+  const cacheKey = `verticals_${JSON.stringify(req.query)}_${isStaff}`;
   const cachedData = getCached(cacheKey);
   
   if (cachedData) {
@@ -27,7 +28,8 @@ export const getVerticals = asyncHandler(async (req, res) => {
     return res.status(200).json({ success: true, data: cachedData });
   }
 
-  const verticals = await Vertical.find({}).sort({ createdAt: 1 }).lean();
+  const filter = isStaff ? {} : { active: true };
+  const verticals = await Vertical.find(filter).sort({ createdAt: 1 }).lean();
   setCached(cacheKey, verticals, 300);
   res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: verticals });

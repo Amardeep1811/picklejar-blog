@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function TopAdBanner() {
   const [ad, setAd] = useState(null);
@@ -24,7 +25,7 @@ export default function TopAdBanner() {
         {ad ? (
           <a href={ad.ctaUrl || '#'} target="_blank" rel="noreferrer" className="block w-full h-full">
             {ad.image ? (
-              <img src={ad.image} alt={ad.ctaText || 'Advertisement'} className="w-full h-full object-cover" />
+              <img src={optimizeCloudinaryUrl(ad.image, { width: 970, crop: 'fill' })} alt={ad.ctaText || 'Advertisement'} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-[#82c6b4] flex items-center justify-center text-white font-bold text-lg">
                 {ad.ctaText || 'Advertisement'}

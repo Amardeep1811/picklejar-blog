@@ -1,4 +1,4 @@
-
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function SectionDividerAd({ data: ad }) {
 
@@ -7,7 +7,7 @@ export default function SectionDividerAd({ data: ad }) {
       {ad ? (
         <a href={ad.ctaUrl || '#'} target="_blank" rel="noreferrer" className="block w-full h-full">
           {ad.image ? (
-            <img src={ad.image} alt={ad.ctaText || 'Advertisement'} className="w-full h-full object-cover border border-[var(--line)] rounded-sm" />
+            <img src={optimizeCloudinaryUrl(ad.image, { width: 1200, crop: 'fill' })} alt={ad.ctaText || 'Advertisement'} className="w-full h-full object-cover border border-[var(--line)] rounded-sm" />
           ) : (
             <div className="w-full h-full bg-gradient-to-r from-blue-900 to-indigo-800 flex items-center justify-center text-white text-2xl font-bold rounded-sm border border-[var(--line)]">
               {ad.ctaText || 'Advertisement'}

@@ -254,6 +254,7 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .skip(parseInt(skip, 10))
     .limit(parseInt(limit, 10))
     .populate('vertical', 'name slug')
+    .select('title slug excerpt bannerImage vertical publishDate status editorsPick')
     .lean();
     
   setCached(cacheKey, posts, 300);

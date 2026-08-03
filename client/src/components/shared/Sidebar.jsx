@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../api/axios';
 import PostTitle from '../shared/Typography/PostTitle';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function Sidebar() {
   const [sponsoredAd, setSponsoredAd] = useState(null);
@@ -72,7 +73,7 @@ export default function Sidebar() {
           {sponsoredAd ? (
             <a href={sponsoredAd.ctaUrl} target="_blank" rel="noreferrer" className="block w-full h-full">
               {sponsoredAd.image ? (
-                <img src={sponsoredAd.image} alt="Sponsored" className="w-full h-[250px] object-cover bg-gray-200" />
+                <img src={optimizeCloudinaryUrl(sponsoredAd.image, { width: 300, crop: 'fill' })} alt="Sponsored" className="w-full h-[250px] object-cover bg-gray-200" />
               ) : (
                 <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
               )}
@@ -131,7 +132,7 @@ export default function Sidebar() {
           {bannerAd ? (
             <a href={bannerAd.ctaUrl} target="_blank" rel="noreferrer" className="block w-full h-full">
               {bannerAd.image ? (
-                <img src={bannerAd.image} alt="Advertisement" className="w-full h-[250px] object-cover bg-gray-200" />
+                <img src={optimizeCloudinaryUrl(bannerAd.image, { width: 300, crop: 'fill' })} alt="Advertisement" className="w-full h-[250px] object-cover bg-gray-200" />
               ) : (
                 <div className="w-full h-[250px] bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
               )}

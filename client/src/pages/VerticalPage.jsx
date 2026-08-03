@@ -5,6 +5,8 @@ import VerticalPageSkeleton from '../components/shared/VerticalPageSkeleton';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
+import { Helmet } from 'react-helmet-async';
+import { optimizeCloudinaryUrl } from '../utils/optimizeCloudinaryUrl';
 
 export default function VerticalPage() {
   const { verticalSlug } = useParams();
@@ -90,6 +92,14 @@ export default function VerticalPage() {
 
   return (
     <div className="bg-white min-h-screen">
+      <Helmet>
+        <title>{vertical.name} - WalletPickle</title>
+        <meta name="description" content={`Read the latest stories about ${vertical.name} on WalletPickle.`} />
+        <meta property="og:title" content={`${vertical.name} - WalletPickle`} />
+        <meta property="og:description" content={`Read the latest stories about ${vertical.name} on WalletPickle.`} />
+        <meta property="og:url" content={window.location.href} />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-6 py-12">
         
         {/* Page Heading */}
@@ -110,7 +120,7 @@ export default function VerticalPage() {
                   <div className="w-full lg:w-[55%] flex flex-col lg:pr-10 lg:border-r border-[var(--line)]">
                     <Link to={`/${vertical.slug}/${heroPost.slug}`} className="group block transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4">
                       {heroPost.bannerImage ? (
-                        <img src={heroPost.bannerImage} alt={heroPost.title} className="w-full aspect-[16/9] object-cover mb-4 rounded-sm" />
+                        <img src={optimizeCloudinaryUrl(heroPost.bannerImage, { width: 800, crop: 'fill' })} alt={heroPost.title} className="w-full aspect-[16/9] object-cover mb-4 rounded-sm" />
                       ) : (
                         <div className="w-full aspect-[16/9] bg-gray-100 border border-[var(--line)] mb-4 flex items-center justify-center text-gray-400 text-sm rounded-sm">No Image</div>
                       )}
@@ -134,7 +144,7 @@ export default function VerticalPage() {
                       {gridPosts.map(post => (
                         <Link key={post._id} to={`/${vertical.slug}/${post.slug}`} className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-3 -mx-3 -my-3">
                           {post.bannerImage ? (
-                            <img src={post.bannerImage} alt={post.title} className="w-full aspect-video object-cover mb-3 rounded-sm" />
+                            <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 400, crop: 'fill' })} alt={post.title} className="w-full aspect-video object-cover mb-3 rounded-sm" />
                           ) : (
                             <div className="w-full aspect-video bg-gray-100 border border-[var(--line)] mb-3 flex items-center justify-center text-gray-400 text-xs rounded-sm">No Image</div>
                           )}
@@ -167,7 +177,7 @@ export default function VerticalPage() {
                         >
                           <div className="w-[120px] shrink-0">
                             {post.bannerImage ? (
-                              <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
+                              <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 200, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover rounded-sm" />
                             ) : (
                               <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] flex items-center justify-center text-xs text-gray-400 rounded-sm">No Img</div>
                             )}
@@ -212,7 +222,7 @@ export default function VerticalPage() {
                       className="group flex flex-col transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] rounded-xl p-4 -mx-4 -my-4"
                     >
                       {post.bannerImage ? (
-                        <img src={post.bannerImage} alt={post.title} className="w-full aspect-[4/3] object-cover mb-4 rounded-sm" />
+                        <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 400, crop: 'fill' })} alt={post.title} className="w-full aspect-[4/3] object-cover mb-4 rounded-sm" />
                       ) : (
                         <div className="w-full aspect-[4/3] bg-gray-100 border border-[var(--line)] mb-4 flex items-center justify-center text-gray-400 text-xs rounded-sm">No Image</div>
                       )}
