@@ -16,6 +16,14 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
   });
+} else {
+  console.error(
+    "=========================================\n" +
+    "CRITICAL ERROR: SENTRY DSN IS MISSING!\n" +
+    "Error tracking is completely disabled.\n" +
+    "Make sure VITE_SENTRY_DSN is set in your .env or Netlify settings.\n" +
+    "========================================="
+  );
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
