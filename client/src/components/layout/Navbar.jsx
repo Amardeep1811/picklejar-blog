@@ -171,7 +171,7 @@ export default function Navbar() {
         </nav>
 
         {/* More Dropdown Panel */}
-        <div 
+        <div
           className={`hidden xl:block absolute top-full left-0 w-full bg-[#111] overflow-hidden transition-all duration-250 ease-in-out z-40 ${moreOpen ? 'max-h-96 opacity-100 py-6 px-6 border-b border-gray-800' : 'max-h-0 opacity-0 py-0 px-6'}`}
           onMouseEnter={handleMoreEnter}
           onMouseLeave={handleMoreLeave}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
+import { Helmet } from 'react-helmet-async';
 import PostPageSkeleton from '../components/shared/PostPageSkeleton';
 import EditorJsRenderer from '../components/shared/EditorJsRenderer';
 import ArticleAdCard from '../components/shared/ArticleAdCard';
@@ -70,6 +71,12 @@ export default function PostPage() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
+      <Helmet>
+        <title>{data.title} - WalletPickle</title>
+        <meta name="description" content={data.excerpt || data.title} />
+        <meta property="og:title" content={`${data.title} - WalletPickle`} />
+        <meta property="og:description" content={data.excerpt || data.title} />
+      </Helmet>
       
       {/* HEADER AREA */}
       <div className="max-w-4xl mx-auto px-6 pt-16 pb-10 text-center flex flex-col items-center">

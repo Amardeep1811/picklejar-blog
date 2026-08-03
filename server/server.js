@@ -8,7 +8,8 @@ import mongoSanitize from 'express-mongo-sanitize';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import connectDB from './config/db.js';
-
+import * as Sentry from '@sentry/node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import verticalRoutes from './routes/verticalRoutes.js';
@@ -18,6 +19,7 @@ import subscriberRoutes from './routes/subscriberRoutes.js';
 import petitionRoutes from './routes/petitionRoutes.js';
 import trendingRoutes from './routes/trendingRoutes.js';
 import homeRoutes from './routes/homeRoutes.js';
+import sitemapRoutes from './routes/sitemapRoutes.js';
 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { initTrendingJob } from './jobs/trendingJob.js';
@@ -38,6 +40,17 @@ if (missingEnv.length > 0) {
 
 connectDB();
 const app = express();
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      nodeProfilingIntegration(),
+    ],
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+  });
+}
 
 // Trust proxy settings (Render reverse proxy)
 app.set('trust proxy', 1);
@@ -103,6 +116,12 @@ app.use('/api/subscribers', subscriberRoutes);
 app.use('/api/petitions', petitionRoutes);
 app.use('/api/trending', trendingRoutes);
 app.use('/api/home', homeRoutes);
+
+app.use('/sitemap.xml', sitemapRoutes);
+
+if (process.env.SENTRY_DSN) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 app.use(notFound);
 app.use(errorHandler);
