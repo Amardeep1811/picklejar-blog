@@ -69,26 +69,28 @@ export default function PostPage() {
     year: 'numeric'
   });
 
+  const trimmedExcerpt = data.excerpt?.trim() || data.title;
+
   return (
     <div className="bg-white min-h-screen pb-20">
       <Helmet>
-        <title>{data.title} - WalletPickle</title>
-        <meta name="description" content={data.excerpt || data.title} />
+        <title>{`${data.title} - WalletPickle`}</title>
+        <meta name="description" content={trimmedExcerpt} />
         <meta property="og:title" content={`${data.title} - WalletPickle`} />
-        <meta property="og:description" content={data.excerpt || data.title} />
+        <meta property="og:description" content={trimmedExcerpt} />
         {data.bannerImage && <meta property="og:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
         <meta property="og:url" content={window.location.href} />
         <link rel="canonical" href={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${data.title} - WalletPickle`} />
-        <meta name="twitter:description" content={data.excerpt || data.title} />
+        <meta name="twitter:description" content={trimmedExcerpt} />
         {data.bannerImage && <meta name="twitter:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
             "headline": data.title,
-            "description": data.excerpt || data.title,
+            "description": trimmedExcerpt,
             "image": data.bannerImage ? optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' }) : undefined,
             "datePublished": data.publishDate || data.createdAt,
             "author": {
