@@ -36,3 +36,4 @@ fetchLatest.js
 *.njsproj
 *.sln
 *.sw?
+recurring-bug-pattern.md
