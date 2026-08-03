@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find({ status: 'published' }).populate('vertical', 'slug');
-    const verticals = await Vertical.find({ isActive: true });
+    const verticals = await Vertical.find({ active: true });
 
     const baseUrl = process.env.CLIENT_URL || 'https://walletpickle.com';
 
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
     // Add verticals
     for (const vertical of verticals) {
-      xml += `  <url>\n    <loc>${baseUrl}/${vertical.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>${baseUrl}/${vertical.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
     }
 
     // Add posts

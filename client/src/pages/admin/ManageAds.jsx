@@ -3,6 +3,7 @@ import axios from '../../api/axios';
 import { AuthContext } from '../../context/AuthContext';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function ManageAds() {
   const { user: currentUser } = useContext(AuthContext);
@@ -297,7 +298,7 @@ export default function ManageAds() {
             />
             {uploadingImage && <p className="text-sm text-gray-400">Uploading...</p>}
             {formData.image && (
-              <img src={formData.image} alt="Ad Preview" className="h-32 object-cover rounded mt-2" />
+              <img src={optimizeCloudinaryUrl(formData.image, { width: 400, crop: 'fill' })} alt="Ad Preview" className="h-32 object-cover rounded mt-2" />
             )}
           </div>
 
@@ -316,7 +317,7 @@ export default function ManageAds() {
             <div key={ad._id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 {ad.image ? (
-                  <img src={ad.image} className="w-24 h-24 object-cover rounded" alt="Ad Thumbnail" />
+                  <img src={optimizeCloudinaryUrl(ad.image, { width: 150, crop: 'fill' })} className="w-24 h-24 object-cover rounded" alt="Ad Thumbnail" />
                 ) : (
                   <div className="w-24 h-24 bg-gray-700 rounded flex items-center justify-center text-xs text-gray-500">No Image</div>
                 )}

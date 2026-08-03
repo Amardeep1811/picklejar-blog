@@ -27,7 +27,7 @@ import { initExpiredAdsJob } from './jobs/expiredAdsJob.js';
 import { initKeepAliveJob } from './jobs/keepAliveJob.js';
 
 // Startup env check
-const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL'];
+const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL', 'IP_SALT'];
 const missingEnv = requiredEnv.filter(key => {
   if (key === 'MONGO_URI') return !process.env.MONGO_URI && !process.env.MONGODB_URI;
   return !process.env[key];

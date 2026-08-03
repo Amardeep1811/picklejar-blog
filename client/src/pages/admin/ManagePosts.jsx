@@ -3,6 +3,7 @@ import axios from '../../api/axios';
 import PostEditor from '../../components/admin/PostEditor';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
+import { optimizeCloudinaryUrl } from '../../utils/optimizeCloudinaryUrl';
 
 export default function ManagePosts() {
   const [posts, setPosts] = useState([]);
@@ -229,7 +230,7 @@ export default function ManagePosts() {
             />
             {uploadingBanner && <p className="text-sm text-gray-400">Uploading...</p>}
             {formData.bannerImage && (
-              <img src={formData.bannerImage} alt="Banner Preview" className="h-32 object-cover rounded mt-2 border border-gray-600" />
+              <img src={optimizeCloudinaryUrl(formData.bannerImage, { width: 400, crop: 'fill' })} alt="Banner Preview" className="h-32 object-cover rounded mt-2 border border-gray-600" />
             )}
           </div>
 
@@ -253,7 +254,7 @@ export default function ManagePosts() {
             <div key={post._id} className="bg-gray-900 border border-gray-700 p-4 rounded-lg flex items-center justify-between hover:bg-gray-800 transition-colors">
               <div className="flex items-center space-x-4">
                 {post.bannerImage ? (
-                  <img src={post.bannerImage} className="w-16 h-16 object-cover rounded border border-gray-600" alt="Thumbnail" />
+                  <img src={optimizeCloudinaryUrl(post.bannerImage, { width: 100, crop: 'fill' })} className="w-16 h-16 object-cover rounded border border-gray-600" alt="Thumbnail" />
                 ) : (
                   <div className="w-16 h-16 bg-gray-800 rounded border border-gray-600 flex items-center justify-center text-gray-500 text-xs">No img</div>
                 )}

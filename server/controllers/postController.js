@@ -126,7 +126,7 @@ export const getPost = asyncHandler(async (req, res) => {
   
   // Track view asynchronously on GET /api/posts/:slug with IP hashing and 24h deduplication
   const rawIp = req.ip || '';
-  const salt = process.env.IP_SALT || 'picklejar-ip-salt';
+  const salt = process.env.IP_SALT;
   const ipHash = crypto.createHmac('sha256', salt).update(rawIp).digest('hex');
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
