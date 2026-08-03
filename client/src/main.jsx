@@ -1,9 +1,8 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './App.jsx'
 import './index.css'
 import * as Sentry from "@sentry/react";
-import { HelmetProvider } from 'react-helmet-async';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -26,12 +25,14 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// Remove static SEO tags from index.html that are marked with data-rh="true"
+// This prevents duplication since react-helmet-async v3 uses React 19's native head support (which doesn't clean them up)
+document.querySelectorAll('[data-rh="true"]').forEach(el => el.remove());
+
+createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <HelmetProvider>
-      <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-        <App />
-      </Sentry.ErrorBoundary>
-    </HelmetProvider>
+    <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
+      <App />
+    </Sentry.ErrorBoundary>
   </React.StrictMode>,
 )

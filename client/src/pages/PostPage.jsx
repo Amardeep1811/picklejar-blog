@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
+
 import { Helmet } from 'react-helmet-async';
 import PostPageSkeleton from '../components/shared/PostPageSkeleton';
 import EditorJsRenderer from '../components/shared/EditorJsRenderer';
@@ -80,33 +81,12 @@ export default function PostPage() {
         <meta property="og:description" content={trimmedExcerpt} />
         {data.bannerImage && <meta property="og:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
         <meta property="og:url" content={window.location.href} />
-        <link rel="canonical" href={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${data.title} - WalletPickle`} />
         <meta name="twitter:description" content={trimmedExcerpt} />
         {data.bannerImage && <meta name="twitter:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            "headline": data.title,
-            "description": trimmedExcerpt,
-            "image": data.bannerImage ? optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' }) : undefined,
-            "datePublished": data.publishDate || data.createdAt,
-            "author": {
-              "@type": "Person",
-              "name": data.author?.name || "WalletPickle Editor"
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "WalletPickle",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://walletpickle.com/logo.png"
-              }
-            }
-          })}
-        </script>
+        <link rel="canonical" href={window.location.href} />
+
       </Helmet>
       
       {/* HEADER AREA */}

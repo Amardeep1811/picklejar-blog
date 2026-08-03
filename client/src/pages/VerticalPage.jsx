@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
+import { Helmet } from 'react-helmet-async';
 import VerticalPageSkeleton from '../components/shared/VerticalPageSkeleton';
 import PostTitle from '../components/shared/Typography/PostTitle';
 import PostExcerpt from '../components/shared/Typography/PostExcerpt';
 import SectionDividerAd from '../components/ads/SectionDividerAd';
-import { Helmet } from 'react-helmet-async';
 import { optimizeCloudinaryUrl } from '../utils/optimizeCloudinaryUrl';
 
 export default function VerticalPage() {
@@ -93,7 +93,7 @@ export default function VerticalPage() {
   return (
     <div className="bg-white min-h-screen">
       <Helmet>
-        <title>{vertical.name} - WalletPickle</title>
+        <title>{`${vertical.name} - WalletPickle`}</title>
         <meta name="description" content={`Read the latest stories about ${vertical.name} on WalletPickle.`} />
         <meta property="og:title" content={`${vertical.name} - WalletPickle`} />
         <meta property="og:description" content={`Read the latest stories about ${vertical.name} on WalletPickle.`} />

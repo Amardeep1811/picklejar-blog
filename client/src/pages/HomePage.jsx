@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import axios from '../api/axios';
 import TrendingSection from '../components/home/TrendingSection';
 import FeaturedHeroSection from '../components/home/FeaturedHeroSection';
@@ -35,6 +36,14 @@ export default function HomePage() {
   if (error) {
     return (
       <div className="max-w-[1440px] mx-auto px-6 py-10">
+        <Helmet>
+          <title>WalletPickle</title>
+          <meta name="description" content="WalletPickle - The best place for sports and finance news." />
+          <meta property="og:title" content="WalletPickle" />
+          <meta property="og:description" content="The best place for sports and finance news." />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://walletpickle.com/" />
+        </Helmet>
         <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
       </div>
     );
@@ -42,6 +51,14 @@ export default function HomePage() {
 
   return (
     <>
+      <Helmet>
+        <title>WalletPickle</title>
+        <meta name="description" content="WalletPickle - The best place for sports and finance news." />
+        <meta property="og:title" content="WalletPickle" />
+        <meta property="og:description" content="The best place for sports and finance news." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://walletpickle.com/" />
+      </Helmet>
       <div className="max-w-[1440px] mx-auto px-6 py-10">
         <div className="flex flex-col lg:flex-row gap-12">
           <div className="flex-1 w-full">
