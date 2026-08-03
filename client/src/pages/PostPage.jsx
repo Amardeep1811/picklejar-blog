@@ -79,6 +79,7 @@ export default function PostPage() {
         <meta name="description" content={trimmedExcerpt} />
         <meta property="og:title" content={`${data.title} - WalletPickle`} />
         <meta property="og:description" content={trimmedExcerpt} />
+        <meta property="og:type" content="article" />
         {data.bannerImage && <meta property="og:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
@@ -86,7 +87,30 @@ export default function PostPage() {
         <meta name="twitter:description" content={trimmedExcerpt} />
         {data.bannerImage && <meta name="twitter:image" content={optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: 'fill' })} />}
         <link rel="canonical" href={window.location.href} />
-
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": data.title,
+            "description": trimmedExcerpt,
+            "image": data.bannerImage
+              ? optimizeCloudinaryUrl(data.bannerImage, { width: 1200, crop: "fill" })
+              : undefined,
+            "datePublished": data.publishDate || data.createdAt,
+            "author": {
+              "@type": "Person",
+              "name": data.author?.name || "WalletPickle Editor"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "WalletPickle",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://walletpickle.com/logo.png"
+              }
+            }
+          })}
+        </script>
       </Helmet>
       
       {/* HEADER AREA */}
