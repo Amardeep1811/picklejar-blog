@@ -30,8 +30,21 @@ export const getAds = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: ads });
 });
 
+const ALLOWED_AD_FIELDS = [
+  'type', 'image', 'ctaText', 'ctaUrl', 'targetVertical',
+  'placement', 'active', 'startDate', 'endDate'
+];
+
+function pickAllowedAdFields(body) {
+  return ALLOWED_AD_FIELDS.reduce((acc, key) => {
+    if (body[key] !== undefined) acc[key] = body[key];
+    return acc;
+  }, {});
+}
+
 export const createAd = asyncHandler(async (req, res) => {
-  const ad = await Ad.create(req.body);
+  const data = pickAllowedAdFields(req.body);
+  const ad = await Ad.create(data);
   if (process.env.NODE_ENV !== 'production') {
     console.log('--- DB WRITE: createAd ---', {
       id: ad._id,
@@ -49,7 +62,8 @@ export const updateAd = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Ad not found');
   }
-  Object.assign(ad, req.body);
+  const data = pickAllowedAdFields(req.body);
+  Object.assign(ad, data);
   const updatedAd = await ad.save();
   res.status(200).json({ success: true, data: updatedAd });
 });
@@ -74,7 +88,7 @@ export const getInArticleAds = asyncHandler(async (req, res) => {
     targetVertical: vertical === 'null' ? null : vertical,
     $and: [
       { $or: [{ startDate: null }, { startDate: { $exists: false } }, { startDate: { $lte: now } }] },
-      { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gt: now } }] }
+      { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gte: now } }] }
     ]
   };
 

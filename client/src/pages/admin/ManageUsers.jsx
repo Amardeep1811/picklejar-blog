@@ -10,6 +10,13 @@ export default function ManageUsers() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  const [changePasswordId, setChangePasswordId] = useState(null);
+  const [changePasswordUser, setChangePasswordUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+
   const defaultForm = {
     name: '',
     email: '',
@@ -76,6 +83,55 @@ export default function ManageUsers() {
     setErrorMsg('');
   };
 
+  const handleChangePasswordClick = (userToChange) => {
+    setChangePasswordId(userToChange._id);
+    setChangePasswordUser(userToChange);
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setPasswordError('');
+    setPasswordSuccess('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleChangePasswordCancel = () => {
+    setChangePasswordId(null);
+    setChangePasswordUser(null);
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setPasswordError('');
+    setPasswordSuccess('');
+  };
+
+  const handleChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const res = await axios.put(`/users/${changePasswordId}/password`, { password: newPassword });
+      if (res.data.success) {
+        setPasswordSuccess('Password changed successfully!');
+        setNewPassword('');
+        setConfirmNewPassword('');
+        setTimeout(() => {
+          handleChangePasswordCancel();
+        }, 2000);
+      }
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || 'Failed to change password');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -125,7 +181,7 @@ export default function ManageUsers() {
     <div className="p-6 text-white max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Manage Users</h1>
-        {!isEditing && (
+        {!isEditing && !changePasswordId && (
           <button 
             onClick={() => setIsEditing(true)} 
             className="bg-blue-600 px-4 py-2 rounded text-white font-bold hover:bg-blue-700 transition-colors"
@@ -210,6 +266,62 @@ export default function ManageUsers() {
             </button>
           </div>
         </form>
+      ) : changePasswordId ? (
+        <form onSubmit={handleChangePasswordSubmit} className="space-y-6 bg-gray-900 p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
+          <h2 className="text-xl font-bold mb-4 text-yellow-400">
+            Change Password for: {changePasswordUser?.name}
+          </h2>
+          
+          {passwordSuccess && (
+            <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded mb-4">
+              {passwordSuccess}
+            </div>
+          )}
+
+          {passwordError && (
+            <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
+              {passwordError}
+            </div>
+          )}
+
+          {!passwordSuccess && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-2 text-sm font-medium">New Password</label>
+                <input 
+                  type="password" 
+                  required
+                  minLength="6"
+                  className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-yellow-500"
+                  value={newPassword} 
+                  onChange={e => setNewPassword(e.target.value)} 
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium">Confirm New Password</label>
+                <input 
+                  type="password" 
+                  required
+                  minLength="6"
+                  className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-yellow-500"
+                  value={confirmNewPassword} 
+                  onChange={e => setConfirmNewPassword(e.target.value)} 
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="flex space-x-4">
+            {!passwordSuccess && (
+              <button type="submit" className="bg-yellow-600 px-6 py-2 rounded font-bold hover:bg-yellow-700 transition-colors text-white">
+                Change Password
+              </button>
+            )}
+            <button type="button" onClick={handleChangePasswordCancel} className="bg-gray-600 px-6 py-2 rounded font-bold hover:bg-gray-700 transition-colors">
+              {passwordSuccess ? 'Close' : 'Cancel'}
+            </button>
+          </div>
+        </form>
       ) : (
         <div className="overflow-x-auto bg-gray-900 rounded-lg border border-gray-700 shadow-lg">
           <table className="w-full text-left text-sm text-gray-400">
@@ -245,12 +357,20 @@ export default function ManageUsers() {
                         Edit
                       </button>
                       {!isSelf && (
-                        <button 
-                          onClick={() => handleDelete(u._id)}
-                          className="text-red-400 hover:text-red-300 font-medium transition-colors"
-                        >
-                          Delete
-                        </button>
+                        <>
+                          <button 
+                            onClick={() => handleChangePasswordClick(u)}
+                            className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
+                          >
+                            Change Password
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(u._id)}
+                            className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </>
                       )}
                     </td>
                   </tr>

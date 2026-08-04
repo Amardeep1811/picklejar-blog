@@ -98,7 +98,7 @@ export const getPost = asyncHandler(async (req, res) => {
       targetVertical: { $in: [null, post.vertical._id] },
       $and: [
         { $or: [{ startDate: null }, { startDate: { $exists: false } }, { startDate: { $lte: now } }] },
-        { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gt: now } }] }
+        { $or: [{ endDate: null }, { endDate: { $exists: false } }, { endDate: { $gte: now } }] }
       ]
     };
     const adsPromise = (await import('../models/Ad.js')).default.find(adFilter).sort({ createdAt: 1 }).lean();

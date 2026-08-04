@@ -1,10 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import { createUser, getUsers, updateUser, deleteUser } from '../controllers/userController.js';
+import { createUser, getUsers, updateUser, deleteUser, changeUserPassword } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import role from '../middleware/roleMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
-import { userCreateSchema, userUpdateSchema } from '../validators/userValidator.js';
+import { userCreateSchema, userUpdateSchema, adminChangePasswordSchema } from '../validators/userValidator.js';
 
 router.route('/')
   .post(protect, role(['admin']), validate(userCreateSchema), createUser)
@@ -13,5 +13,8 @@ router.route('/')
 router.route('/:id')
   .put(protect, role(['admin']), validate(userUpdateSchema), updateUser)
   .delete(protect, role(['admin']), deleteUser);
+
+router.route('/:id/password')
+  .put(protect, role(['admin']), validate(adminChangePasswordSchema), changeUserPassword);
 
 export default router;

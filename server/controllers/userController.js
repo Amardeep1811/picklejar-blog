@@ -87,3 +87,22 @@ export const deleteUser = asyncHandler(async (req, res) => {
   await user.deleteOne();
   res.status(200).json({ success: true, message: 'User deleted' });
 });
+
+export const changeUserPassword = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  if (user.role === 'admin' && req.user._id.toString() !== user._id.toString()) {
+    res.status(400);
+    throw new Error('Cannot change password for other admins');
+  }
+
+  user.password = req.body.password;
+  await user.save();
+
+  res.status(200).json({ success: true, message: 'Password updated successfully' });
+});

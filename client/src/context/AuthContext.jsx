@@ -20,7 +20,9 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
-    if (window.location.pathname.startsWith('/admin')) {
+    const path = window.location.pathname;
+    const isPublicAdminRoute = path.startsWith('/admin/login') || path.startsWith('/admin/forgot-password') || path.startsWith('/admin/reset-password');
+    if (path.startsWith('/admin') && !isPublicAdminRoute) {
       fetchMe();
     } else {
       setIsLoading(false);

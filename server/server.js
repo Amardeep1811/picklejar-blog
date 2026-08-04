@@ -27,7 +27,7 @@ import { initExpiredAdsJob } from './jobs/expiredAdsJob.js';
 import { initKeepAliveJob } from './jobs/keepAliveJob.js';
 
 // Startup env check
-const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL', 'IP_SALT'];
+const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL', 'IP_SALT', 'SENDGRID_API_KEY', 'SENDGRID_FROM_EMAIL'];
 const missingEnv = requiredEnv.filter(key => {
   if (key === 'MONGO_URI') return !process.env.MONGO_URI && !process.env.MONGODB_URI;
   return !process.env[key];
@@ -106,10 +106,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// TEMPORARY: Test route for Sentry verification
-app.get('/api/test-sentry-error', (req, res) => {
-  throw new Error('Sentry Test Error from WalletPickle backend');
-});
 
 // Routes
 app.use('/api/auth', authRoutes);

@@ -48,6 +48,12 @@ export default function PostEditor({ initialData, editorRef }) {
                         message: err.message || 'Image upload failed'
                       };
                     });
+                },
+                uploadByUrl(url) {
+                  return Promise.resolve({
+                    success: 0,
+                    message: 'URL upload is disabled. Please upload a file.'
+                  });
                 }
               }
             }

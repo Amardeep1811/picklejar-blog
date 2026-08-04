@@ -15,6 +15,14 @@ function isAllowedEmbed(url) {
   }
 }
 
+function isCloudinaryUrl(url) {
+  try {
+    return new URL(url).hostname === 'res.cloudinary.com';
+  } catch {
+    return false;
+  }
+}
+
 export default function EditorJsRenderer({ blocks }) {
   if (!blocks || !Array.isArray(blocks)) return null;
 
@@ -39,6 +47,7 @@ export default function EditorJsRenderer({ blocks }) {
             );
           }
           case 'image':
+            if (!isCloudinaryUrl(block.data.file?.url)) return null;
             return (
               <figure key={index} className="my-6">
                 <img 

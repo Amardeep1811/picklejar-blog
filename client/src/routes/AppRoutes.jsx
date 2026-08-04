@@ -14,6 +14,8 @@ const ManageVerticals = lazy(() => import('../pages/admin/ManageVerticals'));
 const ManagePetitions = lazy(() => import('../pages/admin/ManagePetitions'));
 const ManageAds = lazy(() => import('../pages/admin/ManageAds'));
 const ManageUsers = lazy(() => import('../pages/admin/ManageUsers'));
+const ForgotPassword = lazy(() => import('../pages/admin/ForgotPassword'));
+const ResetPassword = lazy(() => import('../pages/admin/ResetPassword'));
 
 export default function AppRoutes() {
   return (
@@ -26,6 +28,9 @@ export default function AppRoutes() {
       </Route>
 
       <Route path="/admin/login" element={<Suspense fallback={<div>Loading...</div>}><AdminLogin /></Suspense>} />
+      <Route path="/admin/forgot-password" element={<Suspense fallback={<div>Loading...</div>}><ForgotPassword /></Suspense>} />
+      <Route path="/admin/reset-password/:token" element={<Suspense fallback={<div>Loading...</div>}><ResetPassword /></Suspense>} />
+      
       <Route path="/admin/dashboard" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><AdminDashboard /></Suspense></ProtectedRoute>} />
       <Route path="/admin/posts" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManagePosts /></Suspense></ProtectedRoute>} />
       <Route path="/admin/verticals" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManageVerticals /></Suspense></ProtectedRoute>} />

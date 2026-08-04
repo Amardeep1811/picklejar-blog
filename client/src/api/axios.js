@@ -9,7 +9,13 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+      const path = window.location.pathname;
+      if (
+        path.startsWith('/admin') && 
+        !path.startsWith('/admin/login') &&
+        !path.startsWith('/admin/forgot-password') &&
+        !path.startsWith('/admin/reset-password')
+      ) {
         window.location.href = '/admin/login';
       }
     }
