@@ -31,10 +31,10 @@ async function testRequest(url, userAgent) {
 
 async function runTests() {
   // Test 1: Normal user on post
-  await testRequest('http://localhost/news/some-post', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
+  await testRequest('http://localhost/insurance/how-the-latest-fed-rate-hike-impacts-your-student-loans', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)');
   
   // Test 2: Bot on post
-  await testRequest('http://localhost/news/some-post', 'facebookexternalhit/1.1');
+  await testRequest('http://localhost/insurance/how-the-latest-fed-rate-hike-impacts-your-student-loans', 'facebookexternalhit/1.1');
   
   // Test 3: Bot on api route
   await testRequest('http://localhost/api/posts/some-post', 'Twitterbot');

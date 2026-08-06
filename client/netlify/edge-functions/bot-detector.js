@@ -34,7 +34,14 @@ export default async (request, context) => {
   let imageUrl = "https://walletpickle.com/favicon.svg"; 
   let canonicalUrl = url.href;
 
-  const apiUrl = Netlify.env.get("VITE_API_URL") || "https://picklejar-backend-2n9l.onrender.com";
+  let apiUrl = Netlify.env.get("VITE_API_URL") || "https://picklejar-backend-2n9l.onrender.com";
+  // Strip trailing slash and /api if present to normalize
+  if (apiUrl.endsWith('/')) {
+    apiUrl = apiUrl.slice(0, -1);
+  }
+  if (apiUrl.endsWith('/api')) {
+    apiUrl = apiUrl.slice(0, -4);
+  }
 
   // Post URL: /{verticalSlug}/{postSlug}
   if (pathParts.length === 2) {
