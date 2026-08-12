@@ -1,5 +1,7 @@
 import Petition from '../models/Petition.js';
+import PetitionSignature from '../models/PetitionSignature.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { z } from 'zod';
 import { getCached, setCached } from '../utils/simpleCache.js';
 
 export const getPetitions = asyncHandler(async (req, res) => {
@@ -53,4 +55,61 @@ export const deletePetition = asyncHandler(async (req, res) => {
   }
   await petition.deleteOne();
   res.status(200).json({ success: true, message: 'Petition deleted' });
+});
+
+export const signPetition = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const { id } = req.params;
+
+  // Validate email
+  const emailSchema = z.string().email('Invalid email format');
+  const validationResult = emailSchema.safeParse(email);
+  
+  if (!validationResult.success) {
+    res.status(400);
+    throw new Error('Invalid email format');
+  }
+
+  const petition = await Petition.findById(id);
+  
+  if (!petition) {
+    res.status(404);
+    throw new Error('Petition not found');
+  }
+  
+  if (!petition.active) {
+    res.status(400);
+    throw new Error('This petition is no longer active');
+  }
+
+  try {
+    await PetitionSignature.create({ petition: id, email: validationResult.data });
+    
+    // Increment atomically
+    const updatedPetition = await Petition.findByIdAndUpdate(
+      id,
+      { $inc: { signatureCount: 1 } },
+      { new: true }
+    );
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Petition signed successfully', 
+      signatureCount: updatedPetition.signatureCount 
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400);
+      throw new Error("You've already signed this petition");
+    }
+    throw error;
+  }
+});
+
+export const getPetitionSignatures = asyncHandler(async (req, res) => {
+  const signatures = await PetitionSignature.find({ petition: req.params.id })
+    .select('email createdAt')
+    .sort({ createdAt: -1 })
+    .lean();
+  res.status(200).json({ success: true, data: signatures });
 });

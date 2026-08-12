@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import axios from '../../api/axios';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 export default function ManagePetitions() {
+  const { user: currentUser } = useContext(AuthContext);
   const [petitions, setPetitions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   const [isEditing, setIsEditing] = useState(false);
   const [currentPetition, setCurrentPetition] = useState(null);
+  
+  const [expandedPetitionId, setExpandedPetitionId] = useState(null);
+  const [signatures, setSignatures] = useState([]);
+  const [loadingSignatures, setLoadingSignatures] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -34,6 +40,26 @@ export default function ManagePetitions() {
       setError('Failed to fetch petitions');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSignatures = async (id) => {
+    if (expandedPetitionId === id) {
+      setExpandedPetitionId(null);
+      setSignatures([]);
+      return;
+    }
+    try {
+      setExpandedPetitionId(id);
+      setLoadingSignatures(true);
+      const res = await axios.get(`/petitions/${id}/signatures`);
+      if (res.data.success) {
+        setSignatures(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch signatures', err);
+    } finally {
+      setLoadingSignatures(false);
     }
   };
 
@@ -93,6 +119,15 @@ export default function ManagePetitions() {
   };
 
   if (loading) return <LoadingSpinner />;
+
+  if (currentUser?.role !== 'admin') {
+    return (
+      <div className="p-6 text-white max-w-5xl mx-auto text-center mt-20">
+        <h2 className="text-2xl font-bold text-red-500 mb-2">Access Restricted</h2>
+        <p className="text-gray-400">This page is restricted to administrators only.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -218,32 +253,73 @@ export default function ManagePetitions() {
                     </tr>
                   ) : (
                     petitions.map(petition => (
-                      <tr key={petition._id} className="hover:bg-gray-750 transition-colors">
-                        <td className="px-4 py-3 font-medium text-white max-w-[200px] truncate" title={petition.title}>{petition.title}</td>
-                        <td className="px-4 py-3">{petition.category}</td>
-                        <td className="px-4 py-3">
-                          {petition.signatureCount} / {petition.goalCount}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded text-xs ${petition.active ? 'bg-green-900/50 text-green-400' : 'bg-gray-700 text-gray-400'}`}>
-                            {petition.active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => handleEdit(petition)}
-                            className="text-blue-400 hover:text-blue-300 mr-3 transition-colors"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(petition._id)}
-                            className="text-red-400 hover:text-red-300 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
+                      <Fragment key={petition._id}>
+                        <tr className="hover:bg-gray-750 transition-colors">
+                          <td className="px-4 py-3 font-medium text-white max-w-[200px] truncate" title={petition.title}>{petition.title}</td>
+                          <td className="px-4 py-3">{petition.category}</td>
+                          <td className="px-4 py-3">
+                            {petition.signatureCount} / {petition.goalCount}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 rounded text-xs ${petition.active ? 'bg-green-900/50 text-green-400' : 'bg-gray-700 text-gray-400'}`}>
+                              {petition.active ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              onClick={() => fetchSignatures(petition._id)}
+                              className="text-green-400 hover:text-green-300 mr-3 transition-colors"
+                            >
+                              View Signatures ({petition.signatureCount})
+                            </button>
+                            <button
+                              onClick={() => handleEdit(petition)}
+                              className="text-blue-400 hover:text-blue-300 mr-3 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(petition._id)}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                        {expandedPetitionId === petition._id && (
+                          <tr className="bg-gray-800">
+                            <td colSpan="5" className="px-4 py-4">
+                              <div className="bg-gray-900 rounded p-4 border border-gray-700 text-left">
+                                <h3 className="text-white font-medium mb-3">Signatures for {petition.title}</h3>
+                                {loadingSignatures ? (
+                                  <div className="text-gray-400">Loading signatures...</div>
+                                ) : signatures.length === 0 ? (
+                                  <div className="text-gray-400">No signatures yet.</div>
+                                ) : (
+                                  <div className="max-h-60 overflow-y-auto pr-2">
+                                    <table className="w-full text-sm text-left">
+                                      <thead className="text-gray-400 sticky top-0 bg-gray-900">
+                                        <tr>
+                                          <th className="py-2 font-medium">Email</th>
+                                          <th className="py-2 font-medium">Signed At</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-gray-800">
+                                        {signatures.map((sig, idx) => (
+                                          <tr key={idx} className="text-gray-300">
+                                            <td className="py-2">{sig.email}</td>
+                                            <td className="py-2">{new Date(sig.createdAt).toLocaleString()}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
                     ))
                   )}
                 </tbody>

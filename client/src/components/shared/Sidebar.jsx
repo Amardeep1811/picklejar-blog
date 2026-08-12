@@ -14,6 +14,11 @@ export default function Sidebar() {
   const [subStatus, setSubStatus] = useState('');
   const [subLoading, setSubLoading] = useState(false);
 
+  const [signingPetitionId, setSigningPetitionId] = useState(null);
+  const [signEmail, setSignEmail] = useState('');
+  const [signStatus, setSignStatus] = useState({ id: null, message: '', type: '' });
+  const [signLoading, setSignLoading] = useState(false);
+
   useEffect(() => {
     const fetchSidebarData = async () => {
       try {
@@ -53,6 +58,39 @@ export default function Sidebar() {
       setSubStatus(err.response?.data?.message || 'Subscription failed');
     } finally {
       setSubLoading(false);
+    }
+  };
+
+  const handleSignPetition = async (e, petitionId) => {
+    e.preventDefault();
+    if (!signEmail) return;
+
+    try {
+      setSignLoading(true);
+      setSignStatus({ id: petitionId, message: '', type: '' });
+      const res = await axios.post(`/petitions/${petitionId}/sign`, { email: signEmail });
+      
+      setSignStatus({ id: petitionId, message: res.data.message || 'Signed successfully!', type: 'success' });
+      localStorage.setItem(`signed_petition_${petitionId}`, 'true');
+      
+      setPetitions(prev => prev.map(p => 
+        p._id === petitionId 
+          ? { ...p, signatureCount: res.data.signatureCount || (p.signatureCount + 1) } 
+          : p
+      ));
+      
+      setTimeout(() => {
+        setSigningPetitionId(null);
+      }, 2000);
+      
+    } catch (err) {
+      setSignStatus({ 
+        id: petitionId, 
+        message: err.response?.data?.message || 'Failed to sign petition', 
+        type: 'error' 
+      });
+    } finally {
+      setSignLoading(false);
     }
   };
 
@@ -102,8 +140,20 @@ export default function Sidebar() {
           <div className="flex flex-col">
             {petitions.map(petition => {
               const progress = Math.min(100, Math.round((petition.signatureCount / petition.goalCount) * 100)) || 0;
+              const isExpanded = signingPetitionId === petition._id;
+              const hasSignedLocal = localStorage.getItem(`signed_petition_${petition._id}`);
               return (
-                <div key={petition._id} className="group block border-b border-[var(--line)] last:border-b-0 py-4 first:pt-0 last:pb-0 cursor-pointer transition-all duration-300 hover:bg-[#faf8f2] hover:shadow-[0_10px_22px_-10px_rgba(20,22,29,0.14)] hover:-translate-y-1 hover:scale-[1.01] px-3 -mx-3 rounded-md z-10 relative">
+                <div 
+                  key={petition._id} 
+                  className="group block border-b border-[var(--line)] last:border-b-0 py-4 first:pt-0 last:pb-0 cursor-pointer transition-all duration-300 hover:bg-[#faf8f2] hover:shadow-[0_10px_22px_-10px_rgba(20,22,29,0.14)] hover:-translate-y-1 hover:scale-[1.01] px-3 -mx-3 rounded-md z-10 relative"
+                  onClick={() => {
+                    if (!isExpanded) {
+                      setSigningPetitionId(petition._id);
+                      setSignStatus({ id: null, message: '', type: '' });
+                      setSignEmail('');
+                    }
+                  }}
+                >
                   <div className="text-[10px] tracking-[1px] text-[var(--gray-2)] font-bold mb-1 uppercase">
                     {petition.category} &middot; {formatK(petition.signatureCount)} SIGNATURES
                   </div>
@@ -117,6 +167,49 @@ export default function Sidebar() {
                   <div className="text-[11px] text-[var(--gray)] font-medium">
                     {progress}% of {formatK(petition.goalCount)} goal
                   </div>
+
+                  {isExpanded && (
+                    <div className="mt-4 p-3 bg-[var(--bg-2)] border border-[var(--line)] rounded-sm text-sm" onClick={(e) => e.stopPropagation()}>
+                      {hasSignedLocal ? (
+                        <div className="text-[var(--green)] font-bold text-center py-2">
+                          You've already signed this!
+                        </div>
+                      ) : (
+                        <form onSubmit={(e) => handleSignPetition(e, petition._id)} className="flex flex-col space-y-2">
+                          <p className="font-bold mb-1 text-[var(--ink)]">Add your signature</p>
+                          <input 
+                            type="email" 
+                            placeholder="Your email address" 
+                            required
+                            value={signEmail}
+                            onChange={(e) => setSignEmail(e.target.value)}
+                            className="w-full border border-[var(--line)] p-2 text-sm focus:outline-none focus:border-[var(--green)]"
+                          />
+                          {signStatus.id === petition._id && (
+                            <div className={`text-xs ${signStatus.type === 'error' ? 'text-red-500' : 'text-[var(--green)]'}`}>
+                              {signStatus.message}
+                            </div>
+                          )}
+                          <div className="flex gap-2 pt-1">
+                            <button 
+                              type="submit" 
+                              disabled={signLoading}
+                              className="flex-1 bg-[var(--green)] hover:bg-[var(--green-dark)] text-white font-bold py-2 text-xs transition-colors disabled:opacity-70 rounded-sm"
+                            >
+                              {signLoading ? 'Signing...' : 'Sign Petition'}
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => setSigningPetitionId(null)}
+                              className="px-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 text-xs transition-colors rounded-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
