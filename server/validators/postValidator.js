@@ -10,4 +10,6 @@ export const postSchema = z.object({
   }),
   status: z.enum(['draft', 'published']).optional(),
   editorsPick: z.boolean().optional(),
+  adSlot1: z.string().nullable().optional(),
+  adSlot2: z.string().nullable().optional(),
 });

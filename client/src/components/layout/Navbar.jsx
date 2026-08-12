@@ -75,6 +75,8 @@ export default function Navbar() {
 
           if (currentScrollY > lastScrollY.current && currentScrollY > 250) {
             setHidden(true);
+            setSearchOpen(false);
+            setMoreOpen(false);
           } else {
             setHidden(false);
           }
@@ -177,15 +179,16 @@ export default function Navbar() {
           onMouseLeave={handleMoreLeave}
         >
           <div className="max-w-[1440px] mx-auto px-6">
-            <div className="flex flex-wrap gap-x-8 gap-y-4 text-[#f2eee2]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "11px", letterSpacing: "0.9px", fontWeight: 600 }}>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-[#f2eee2]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", fontSize: "11px", letterSpacing: "0.9px", fontWeight: 600 }}>
               {verticals.map(v => (
                 <Link
                   key={v._id}
                   to={`/${v.slug}`}
                   onClick={() => setMoreOpen(false)}
-                  className="relative group py-1 uppercase text-[#f2eee2] hover:text-[var(--green)] transition-colors"
+                  className="relative group py-1 uppercase text-[#f2eee2]"
                 >
                   {v.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--green)] transition-all duration-300 group-hover:w-full"></span>
                 </Link>
               ))}
             </div>

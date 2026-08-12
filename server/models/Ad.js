@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 const adSchema = new mongoose.Schema({
+  name: { type: String, required: true },
   type: { type: String, enum: ['sponsored', 'banner'], required: true },
   image: String,
   ctaText: String,

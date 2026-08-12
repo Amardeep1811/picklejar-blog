@@ -131,20 +131,8 @@ export default function PostPage() {
           </p>
         )}
         
-        <div className="w-full border-t border-b border-gray-300 py-4 flex flex-col md:flex-row justify-between items-center text-xs font-bold tracking-widest text-gray-500 uppercase font-sans gap-4 md:gap-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[var(--ink)] text-white flex items-center justify-center text-lg">
-              {data.author?.name ? data.author.name.charAt(0) : 'A'}
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-[var(--ink)]">{data.author?.name || 'Editorial Team'}</span>
-              <span className="text-[10px] tracking-wider font-normal">Correspondent</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-6">
-            <span>{formattedDate}</span>
-          </div>
+        <div className="w-full border-t border-b border-gray-300 py-4 flex justify-center items-center text-xs font-bold tracking-widest text-gray-500 uppercase font-sans">
+          <span>{formattedDate}</span>
         </div>
       </div>
 
@@ -184,7 +172,7 @@ export default function PostPage() {
 
         {/* RIGHT SIDEBAR (STICKY) */}
         <aside className="lg:col-span-4 relative">
-          <div className="sticky top-28 flex flex-col">
+          <div className="sticky top-4 flex flex-col">
             <div className="min-h-[400px]">
               <ArticleAdCard ad={inArticleAds[0]} />
             </div>

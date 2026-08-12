@@ -30,7 +30,7 @@ export const getPosts = asyncHandler(async (req, res) => {
   let query = Post.find(filter)
     .sort({ createdAt: -1 })
     .populate('vertical', 'name slug')
-    .select('title slug excerpt bannerImage vertical publishDate status editorsPick')
+    .select('title slug excerpt bannerImage vertical publishDate status editorsPick adSlot1 adSlot2')
     .lean();
 
   if (req.query.limit) query = query.limit(parseInt(req.query.limit, 10));
@@ -63,7 +63,7 @@ export const getPost = asyncHandler(async (req, res) => {
     }
   }
 
-  const post = await Post.findOne({ slug: req.params.slug }).populate('vertical', 'name slug').lean();
+  const post = await Post.findOne({ slug: req.params.slug }).populate('vertical', 'name slug').populate('adSlot1').populate('adSlot2').lean();
   if (!post) {
     res.status(404);
     throw new Error('Post not found');
@@ -106,21 +106,46 @@ export const getPost = asyncHandler(async (req, res) => {
     const [relatedRes, adsRes] = await Promise.all([relatedPromise, adsPromise]);
     relatedPosts = relatedRes;
 
-    // Pick ads pseudo-randomly based on postId hash
-    if (adsRes.length > 0) {
-      if (adsRes.length === 1) {
-        inArticleAds = [adsRes[0], adsRes[0]];
-      } else {
-        let hash = 0;
-        const postIdStr = post._id.toString();
-        for (let i = 0; i < postIdStr.length; i++) {
-          hash = (hash << 5) - hash + postIdStr.charCodeAt(i);
-          hash |= 0;
-        }
-        hash = Math.abs(hash);
-        const startIndex = hash % adsRes.length;
-        inArticleAds = [adsRes[startIndex], adsRes[(startIndex + 1) % adsRes.length]];
+    // Pick ads based on assignments and pseudo-random rotation fallback
+    if (adsRes.length > 0 || post.adSlot1 || post.adSlot2) {
+      let slot1Ad = post.adSlot1 || null;
+      let slot2Ad = post.adSlot2 || null;
+
+      // Filter out assigned ads from the pool to avoid duplicates
+      let algoAds = adsRes.filter(a => {
+        if (slot1Ad && a._id.toString() === slot1Ad._id.toString()) return false;
+        if (slot2Ad && a._id.toString() === slot2Ad._id.toString()) return false;
+        return true;
+      });
+
+      let hash = 0;
+      const postIdStr = post._id.toString();
+      for (let i = 0; i < postIdStr.length; i++) {
+        hash = (hash << 5) - hash + postIdStr.charCodeAt(i);
+        hash |= 0;
       }
+      hash = Math.abs(hash);
+
+      if (!slot1Ad && algoAds.length > 0) {
+        const startIndex = hash % algoAds.length;
+        slot1Ad = algoAds[startIndex];
+        algoAds.splice(startIndex, 1);
+      }
+
+      if (!slot2Ad && algoAds.length > 0) {
+        const nextIndex = (hash + 1) % algoAds.length;
+        slot2Ad = algoAds[nextIndex];
+      }
+
+      // If we only have 1 ad overall and it was picked by algorithm, repeat it to fill both slots.
+      // If it was manually assigned, we do NOT duplicate it.
+      if (!slot2Ad && slot1Ad && algoAds.length === 0) {
+        if (!post.adSlot1) slot2Ad = slot1Ad;
+      } else if (!slot1Ad && slot2Ad && algoAds.length === 0) {
+        if (!post.adSlot2) slot1Ad = slot2Ad;
+      }
+
+      inArticleAds = [slot1Ad, slot2Ad].filter(Boolean);
     }
   }
   
@@ -154,7 +179,8 @@ export const getPost = asyncHandler(async (req, res) => {
 
 const ALLOWED_POST_FIELDS = [
   'title', 'vertical', 'excerpt', 'bannerImage', 'body',
-  'status', 'publishDate', 'readTime', 'editorsPick'
+  'status', 'publishDate', 'readTime', 'editorsPick',
+  'adSlot1', 'adSlot2'
 ];
 
 function pickAllowedFields(body) {
@@ -166,6 +192,10 @@ function pickAllowedFields(body) {
 
 export const createPost = asyncHandler(async (req, res) => {
   const data = pickAllowedFields(req.body);
+  if (req.user.role !== 'admin') {
+    delete data.adSlot1;
+    delete data.adSlot2;
+  }
   data.author = req.user._id; // always server-determined
   const post = await Post.create(data);
   
@@ -189,6 +219,10 @@ export const updatePost = asyncHandler(async (req, res) => {
   }
   
   const data = pickAllowedFields(req.body);
+  if (req.user.role !== 'admin') {
+    delete data.adSlot1;
+    delete data.adSlot2;
+  }
   Object.assign(post, data); // author intentionally excluded — never changeable via update
   const updatedPost = await post.save();
   
@@ -254,7 +288,7 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .skip(parseInt(skip, 10))
     .limit(parseInt(limit, 10))
     .populate('vertical', 'name slug')
-    .select('title slug excerpt bannerImage vertical publishDate status editorsPick')
+    .select('title slug excerpt bannerImage vertical publishDate status editorsPick adSlot1 adSlot2')
     .lean();
     
   setCached(cacheKey, posts, 300);

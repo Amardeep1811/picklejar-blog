@@ -14,6 +14,8 @@ const postSchema = new mongoose.Schema({
   readTime: Number,
   editorsPick: { type: Boolean, default: false },
   isDummySeed: { type: Boolean, default: false },
+  adSlot1: { type: mongoose.Schema.Types.ObjectId, ref: 'Ad', default: null },
+  adSlot2: { type: mongoose.Schema.Types.ObjectId, ref: 'Ad', default: null },
 }, { timestamps: true });
 
 postSchema.index({ status: 1, vertical: 1, createdAt: -1 });

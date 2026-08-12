@@ -15,6 +15,7 @@ export default function ManageAds() {
   
   const initialFormState = {
     _id: null,
+    name: '',
     type: 'banner',
     placement: 'homepage',
     ctaText: '',
@@ -103,6 +104,7 @@ export default function ManageAds() {
   const handleEditClick = (ad) => {
     setFormData({
       _id: ad._id,
+      name: ad.name || '',
       type: ad.type,
       placement: ad.placement,
       ctaText: ad.ctaText || '',
@@ -192,6 +194,16 @@ export default function ManageAds() {
 
       {isEditing ? (
         <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 p-6 rounded-lg shadow-lg">
+          <div>
+            <label className="block mb-2 text-sm font-medium">Ad Name</label>
+            <input 
+              type="text" 
+              required
+              className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+              value={formData.name} 
+              onChange={e => setFormData({...formData, name: e.target.value})} 
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block mb-2 text-sm font-medium">Type</label>
@@ -323,10 +335,10 @@ export default function ManageAds() {
                 )}
                 <div>
                   <h3 className="font-bold text-lg flex items-center gap-2">
-                    {ad.type.toUpperCase()}
+                    {ad.name}
                     {!ad.active && <span className="text-xs bg-red-600 text-white px-2 py-0.5 rounded">Inactive</span>}
                   </h3>
-                  <p className="text-sm text-gray-400">Placement: <span className="text-white">{ad.placement}</span></p>
+                  <p className="text-sm text-gray-400">Type: <span className="text-white">{ad.type.toUpperCase()}</span> | Placement: <span className="text-white">{ad.placement}</span></p>
                   
                   {ad.placement === 'in-article' && (
                     <p className="text-sm text-gray-400">

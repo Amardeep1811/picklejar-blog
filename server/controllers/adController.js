@@ -31,7 +31,7 @@ export const getAds = asyncHandler(async (req, res) => {
 });
 
 const ALLOWED_AD_FIELDS = [
-  'type', 'image', 'ctaText', 'ctaUrl', 'targetVertical',
+  'name', 'type', 'image', 'ctaText', 'ctaUrl', 'targetVertical',
   'placement', 'active', 'startDate', 'endDate'
 ];
 

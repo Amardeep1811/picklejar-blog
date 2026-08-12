@@ -10,6 +10,7 @@ export default function AdminDashboard() {
     { title: 'Manage Verticals', path: '/admin/verticals', description: 'Manage content categories and slugs' },
     { title: 'Manage Petitions', path: '/admin/petitions', description: 'Manage trending petitions and goals' },
     { title: 'Manage Ads', path: '/admin/ads', description: 'Configure banner and sponsored placements' },
+    { title: 'Manage Post Ads', path: '/admin/post-ads', description: 'Assign specific ads to individual posts' },
     { title: 'Manage Users', path: '/admin/users', description: 'Control access and roles' },
   ];
 
