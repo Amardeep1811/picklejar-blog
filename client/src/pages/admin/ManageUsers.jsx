@@ -170,21 +170,21 @@ export default function ManageUsers() {
 
   if (currentUser?.role !== 'admin') {
     return (
-      <div className="p-6 text-white max-w-5xl mx-auto text-center mt-20">
-        <h2 className="text-2xl font-bold text-red-500 mb-2">Access Restricted</h2>
-        <p className="text-gray-400">This page is restricted to administrators only.</p>
+      <div className="p-6 text-[var(--ink)] max-w-5xl mx-auto text-center mt-20">
+        <h2 className="text-2xl font-bold text-[var(--red)] mb-2 font-heading">Access Restricted</h2>
+        <p className="text-[var(--gray)]">This page is restricted to administrators only.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 text-white max-w-5xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Manage Users</h1>
+    <div className="p-6 text-[var(--ink)] max-w-5xl mx-auto py-4">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold font-heading text-[var(--ink)]">Manage Users</h1>
         {!isEditing && !changePasswordId && (
           <button 
             onClick={() => setIsEditing(true)} 
-            className="bg-blue-600 px-4 py-2 rounded text-white font-bold hover:bg-blue-700 transition-colors"
+            className="bg-[var(--green)] px-5 py-2.5 rounded-lg text-white font-bold hover:bg-[var(--green-dark)] hover:-translate-y-0.5 transition-all shadow-sm"
           >
             Add New User
           </button>
@@ -192,45 +192,45 @@ export default function ManageUsers() {
       </div>
 
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
-          <h2 className="text-xl font-bold mb-4 text-blue-400">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-[var(--line)] mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-[var(--ink)] font-heading">
             {editingId ? `Editing User: ${formData.name}` : 'Add New User'}
           </h2>
           
           {errorMsg && (
-            <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
+            <div className="bg-[var(--red)]/10 border border-[var(--red)] text-[var(--red)] px-4 py-3 rounded-lg mb-6 font-medium">
               {errorMsg}
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block mb-2 text-sm font-medium">Name</label>
+              <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Name</label>
               <input 
                 type="text" 
                 required
-                className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                 value={formData.name} 
                 onChange={e => setFormData({...formData, name: e.target.value})} 
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium">Email</label>
+              <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Email</label>
               <input 
                 type="email" 
                 required
-                className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                 value={formData.email} 
                 onChange={e => setFormData({...formData, email: e.target.value})} 
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block mb-2 text-sm font-medium">Role</label>
+              <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Role</label>
               <select 
-                className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                 value={formData.role} 
                 onChange={e => setFormData({...formData, role: e.target.value})}
                 disabled={editingId === currentUser?._id}
@@ -239,17 +239,17 @@ export default function ManageUsers() {
                 <option value="admin">Admin</option>
               </select>
               {editingId === currentUser?._id && (
-                <p className="text-xs text-gray-500 mt-1">You cannot change your own role.</p>
+                <p className="text-xs text-[var(--gray)] mt-1 font-medium">You cannot change your own role.</p>
               )}
             </div>
             {!editingId && (
               <div>
-                <label className="block mb-2 text-sm font-medium">Password</label>
+                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Password</label>
                 <input 
                   type="password" 
                   required={!editingId}
                   minLength="6"
-                  className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={formData.password} 
                   onChange={e => setFormData({...formData, password: e.target.value})} 
                 />
@@ -257,53 +257,53 @@ export default function ManageUsers() {
             )}
           </div>
 
-          <div className="flex space-x-4">
-            <button type="submit" className="bg-green-600 px-6 py-2 rounded font-bold hover:bg-green-700 transition-colors">
+          <div className="flex space-x-4 pt-4 border-t border-[var(--line)] mt-8">
+            <button type="submit" className="bg-[var(--green)] px-6 py-2.5 rounded-lg text-white font-bold hover:bg-[var(--green-dark)] hover:-translate-y-0.5 transition-all shadow-sm">
               {editingId ? 'Save Changes' : 'Create User'}
             </button>
-            <button type="button" onClick={handleCancel} className="bg-gray-600 px-6 py-2 rounded font-bold hover:bg-gray-700 transition-colors">
+            <button type="button" onClick={handleCancel} className="bg-white border border-[var(--line)] text-[var(--ink)] px-6 py-2.5 rounded-lg font-bold hover:bg-[var(--bg-2)] transition-colors">
               Cancel
             </button>
           </div>
         </form>
       ) : changePasswordId ? (
-        <form onSubmit={handleChangePasswordSubmit} className="space-y-6 bg-gray-900 p-6 rounded-lg shadow-lg mb-8 border border-gray-700">
-          <h2 className="text-xl font-bold mb-4 text-yellow-400">
+        <form onSubmit={handleChangePasswordSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-[var(--line)] mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-[var(--ink)] font-heading">
             Change Password for: {changePasswordUser?.name}
           </h2>
           
           {passwordSuccess && (
-            <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded mb-4">
+            <div className="bg-[var(--green)]/10 border border-[var(--green)] text-[var(--green-dark)] px-4 py-3 rounded-lg mb-6 font-medium">
               {passwordSuccess}
             </div>
           )}
 
           {passwordError && (
-            <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
+            <div className="bg-[var(--red)]/10 border border-[var(--red)] text-[var(--red)] px-4 py-3 rounded-lg mb-6 font-medium">
               {passwordError}
             </div>
           )}
 
           {!passwordSuccess && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 text-sm font-medium">New Password</label>
+                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">New Password</label>
                 <input 
                   type="password" 
                   required
                   minLength="6"
-                  className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-yellow-500"
+                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={newPassword} 
                   onChange={e => setNewPassword(e.target.value)} 
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium">Confirm New Password</label>
+                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Confirm New Password</label>
                 <input 
                   type="password" 
                   required
                   minLength="6"
-                  className="w-full bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:border-yellow-500"
+                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={confirmNewPassword} 
                   onChange={e => setConfirmNewPassword(e.target.value)} 
                 />
@@ -311,48 +311,48 @@ export default function ManageUsers() {
             </div>
           )}
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 pt-4 border-t border-[var(--line)] mt-8">
             {!passwordSuccess && (
-              <button type="submit" className="bg-yellow-600 px-6 py-2 rounded font-bold hover:bg-yellow-700 transition-colors text-white">
+              <button type="submit" className="bg-[var(--gold)] px-6 py-2.5 rounded-lg text-white font-bold hover:brightness-95 hover:-translate-y-0.5 transition-all shadow-sm">
                 Change Password
               </button>
             )}
-            <button type="button" onClick={handleChangePasswordCancel} className="bg-gray-600 px-6 py-2 rounded font-bold hover:bg-gray-700 transition-colors">
+            <button type="button" onClick={handleChangePasswordCancel} className="bg-white border border-[var(--line)] text-[var(--ink)] px-6 py-2.5 rounded-lg font-bold hover:bg-[var(--bg-2)] transition-colors">
               {passwordSuccess ? 'Close' : 'Cancel'}
             </button>
           </div>
         </form>
       ) : (
-        <div className="overflow-x-auto bg-gray-900 rounded-lg border border-gray-700 shadow-lg">
-          <table className="w-full text-left text-sm text-gray-400">
-            <thead className="text-xs text-gray-300 uppercase bg-gray-800 border-b border-gray-700">
+        <div className="overflow-x-auto bg-white rounded-xl border border-[var(--line)] shadow-sm">
+          <table className="w-full text-left text-sm text-[var(--ink)]">
+            <thead className="text-xs text-[var(--ink)] uppercase bg-[var(--bg-2)] border-b border-[var(--line)] font-bold">
               <tr>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Role</th>
-                <th className="px-6 py-4">Joined</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4 font-heading">Name</th>
+                <th className="px-6 py-4 font-heading">Email</th>
+                <th className="px-6 py-4 font-heading">Role</th>
+                <th className="px-6 py-4 font-heading">Joined</th>
+                <th className="px-6 py-4 font-heading text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map(u => {
                 const isSelf = u._id === currentUser?._id;
                 return (
-                  <tr key={u._id} className="border-b border-gray-800 hover:bg-gray-800 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white">
-                      {u.name} {isSelf && <span className="text-blue-400 text-xs ml-2">(You)</span>}
+                  <tr key={u._id} className="border-b border-[var(--line)] hover:bg-[var(--bg-2)]/50 transition-colors group">
+                    <td className="px-6 py-4 font-bold text-[var(--ink)]">
+                      {u.name} {isSelf && <span className="text-[var(--gray)] text-xs ml-2">(You)</span>}
                     </td>
-                    <td className="px-6 py-4">{u.email}</td>
+                    <td className="px-6 py-4 text-[var(--ink)]">{u.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${u.role === 'admin' ? 'bg-purple-900 text-purple-300' : 'bg-blue-900 text-blue-300'}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${u.role === 'admin' ? 'bg-[var(--gold)]/20 text-[var(--gold)]' : 'bg-[var(--green)]/10 text-[var(--green-dark)]'}`}>
                         {u.role.toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{new Date(u.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-right space-x-3">
+                    <td className="px-6 py-4 text-[var(--ink)] font-medium">{new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-right space-x-4">
                       <button 
                         onClick={() => handleEditClick(u)}
-                        className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                        className="text-[var(--gray)] hover:text-[var(--green)] text-sm font-bold transition-colors"
                       >
                         Edit
                       </button>
@@ -360,13 +360,13 @@ export default function ManageUsers() {
                         <>
                           <button 
                             onClick={() => handleChangePasswordClick(u)}
-                            className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
+                            className="text-[var(--gray)] hover:text-[var(--gold)] text-sm font-bold transition-colors"
                           >
                             Change Password
                           </button>
                           <button 
                             onClick={() => handleDelete(u._id)}
-                            className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                            className="text-[var(--red)] opacity-80 hover:opacity-100 text-sm font-bold transition-colors"
                           >
                             Delete
                           </button>
@@ -379,7 +379,7 @@ export default function ManageUsers() {
             </tbody>
           </table>
           {users.length === 0 && (
-            <div className="p-8 text-center text-gray-400">
+            <div className="p-12 text-center text-[var(--gray)] font-medium">
               No users found.
             </div>
           )}

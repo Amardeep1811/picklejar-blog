@@ -81,8 +81,8 @@ export default function PostEditor({ initialData, editorRef }) {
   }, []);
 
   return (
-    <div className="border border-gray-700 bg-gray-900 rounded p-4 text-white editor-container min-h-[400px]">
-      <div ref={containerRef} className="prose prose-invert max-w-none" />
+    <div className="border border-[var(--line)] bg-white rounded-lg p-4 text-[var(--ink)] editor-container min-h-[400px]">
+      <div ref={containerRef} className="prose max-w-none" />
     </div>
   );
 }
