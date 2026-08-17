@@ -21,8 +21,9 @@ export default function ResetPassword() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character');
       return;
     }
 
@@ -61,10 +62,12 @@ export default function ResetPassword() {
         {!message && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">New Password</label>
+              <label className="block text-sm font-medium mb-1">New Password</label>
+              <p className="text-xs text-gray-400 mb-2">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
               <input
                 type="password"
                 value={password}
+                minLength="8"
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
                 placeholder="••••••••"
@@ -72,10 +75,12 @@ export default function ResetPassword() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+              <label className="block text-sm font-medium mb-1">Confirm New Password</label>
+              <p className="text-xs text-gray-400 mb-2">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
               <input
                 type="password"
                 value={confirmPassword}
+                minLength="8"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
                 placeholder="••••••••"

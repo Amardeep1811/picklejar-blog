@@ -10,5 +10,5 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/, 'Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character')
 });

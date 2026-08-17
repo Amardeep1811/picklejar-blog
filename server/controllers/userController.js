@@ -96,9 +96,9 @@ export const changeUserPassword = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  if (user.role === 'admin' && req.user._id.toString() !== user._id.toString()) {
-    res.status(400);
-    throw new Error('Cannot change password for other admins');
+  if (user.role === 'admin') {
+    res.status(403);
+    throw new Error('Admin passwords can only be changed via self-service password reset, not by another admin');
   }
 
   user.password = req.body.password;

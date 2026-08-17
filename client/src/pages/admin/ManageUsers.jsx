@@ -112,8 +112,9 @@ export default function ManageUsers() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setPasswordError('Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character');
       return;
     }
 
@@ -150,8 +151,9 @@ export default function ManageUsers() {
           fetchUsers();
         }
       } else {
-        if (formData.password.length < 6) {
-          setErrorMsg('Password must be at least 6 characters');
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+        if (!passwordRegex.test(formData.password)) {
+          setErrorMsg('Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a special character');
           return;
         }
         const res = await axios.post('/users', formData);
@@ -244,11 +246,12 @@ export default function ManageUsers() {
             </div>
             {!editingId && (
               <div>
-                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Password</label>
+                <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">Password</label>
+                <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
                 <input 
                   type="password" 
                   required={!editingId}
-                  minLength="6"
+                  minLength="8"
                   className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={formData.password} 
                   onChange={e => setFormData({...formData, password: e.target.value})} 
@@ -287,22 +290,24 @@ export default function ManageUsers() {
           {!passwordSuccess && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">New Password</label>
+                <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">New Password</label>
+                <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
                 <input 
                   type="password" 
                   required
-                  minLength="6"
+                  minLength="8"
                   className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={newPassword} 
                   onChange={e => setNewPassword(e.target.value)} 
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-semibold text-[var(--ink-2)]">Confirm New Password</label>
+                <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">Confirm New Password</label>
+                <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
                 <input 
                   type="password" 
                   required
-                  minLength="6"
+                  minLength="8"
                   className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
                   value={confirmNewPassword} 
                   onChange={e => setConfirmNewPassword(e.target.value)} 
@@ -358,12 +363,16 @@ export default function ManageUsers() {
                       </button>
                       {!isSelf && (
                         <>
-                          <button 
-                            onClick={() => handleChangePasswordClick(u)}
-                            className="text-[var(--gray)] hover:text-[var(--gold)] text-sm font-bold transition-colors"
-                          >
-                            Change Password
-                          </button>
+                          {u.role === 'admin' ? (
+                            <span className="text-[var(--gray)] text-xs italic">Admins reset via email</span>
+                          ) : (
+                            <button 
+                              onClick={() => handleChangePasswordClick(u)}
+                              className="text-[var(--gray)] hover:text-[var(--gold)] text-sm font-bold transition-colors"
+                            >
+                              Change Password
+                            </button>
+                          )}
                           <button 
                             onClick={() => handleDelete(u._id)}
                             className="text-[var(--red)] opacity-80 hover:opacity-100 text-sm font-bold transition-colors"
