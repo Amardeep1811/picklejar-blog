@@ -117,6 +117,7 @@ app.use('/api/subscribers', subscriberRoutes);
 app.use('/api/petitions', petitionRoutes);
 app.use('/api/trending', trendingRoutes);
 app.use('/api/home', homeRoutes);
+app.use('/api/market', marketRoutes);
 
 app.use('/sitemap.xml', sitemapRoutes);
 

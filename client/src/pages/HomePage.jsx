@@ -38,11 +38,12 @@ export default function HomePage() {
       <div className="max-w-[1440px] mx-auto px-6 py-10">
         <Helmet>
           <title>WalletPickle</title>
-          <meta name="description" content="WalletPickle - The best place for sports and finance news." />
+          <meta name="description" content="WalletPickle is your premier source for breaking news, deep dives, and expert analysis across finance, investing, business, and major sports." />
           <meta property="og:title" content="WalletPickle" />
-          <meta property="og:description" content="The best place for sports and finance news." />
+          <meta property="og:description" content="WalletPickle is your premier source for breaking news, deep dives, and expert analysis across finance, investing, business, and major sports." />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://walletpickle.com/" />
+          <meta property="og:image" content="https://walletpickle.com/logo.png" />
         </Helmet>
         <div className="bg-red-50 text-red-500 p-4 rounded-md">{error}</div>
       </div>
@@ -53,11 +54,12 @@ export default function HomePage() {
     <>
       <Helmet>
         <title>WalletPickle</title>
-        <meta name="description" content="WalletPickle - The best place for sports and finance news." />
+        <meta name="description" content="WalletPickle is your premier source for breaking news, deep dives, and expert analysis across finance, investing, business, and major sports." />
         <meta property="og:title" content="WalletPickle" />
-        <meta property="og:description" content="The best place for sports and finance news." />
+        <meta property="og:description" content="WalletPickle is your premier source for breaking news, deep dives, and expert analysis across finance, investing, business, and major sports." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://walletpickle.com/" />
+        <meta property="og:image" content="https://walletpickle.com/logo.png" />
       </Helmet>
       <div className="max-w-[1440px] mx-auto px-6 py-10">
         <div className="flex flex-col lg:flex-row gap-12">

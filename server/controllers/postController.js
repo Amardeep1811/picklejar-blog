@@ -291,7 +291,68 @@ export const searchPosts = asyncHandler(async (req, res) => {
     .select('title slug excerpt bannerImage vertical publishDate status editorsPick adSlot1 adSlot2')
     .lean();
     
-  setCached(cacheKey, posts, 300);
+    setCached(cacheKey, posts, 300);
   res.setHeader('Cache-Control', 'public, max-age=300');
   res.status(200).json({ success: true, data: posts });
+});
+
+export const sendNewsletter = asyncHandler(async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post) {
+    res.status(404);
+    throw new Error('Post not found');
+  }
+
+  const Subscriber = (await import('../models/Subscriber.js')).default;
+  const subscribers = await Subscriber.find({});
+  
+  if (subscribers.length === 0) {
+    return res.status(200).json({ success: true, message: 'No subscribers found' });
+  }
+
+  const sendEmail = (await import('../utils/sendEmail.js')).default;
+  const protocol = req.protocol === 'http' && req.get('host').includes('localhost') ? 'http' : 'https';
+  const clientUrl = process.env.CLIENT_URL || `${protocol}://${req.get('host').replace('5000', '5173')}`;
+  const postUrl = `${clientUrl}/post/${post.slug}`;
+  
+  const personalizations = [];
+  
+  for (const s of subscribers) {
+    // Backfill token if missing
+    if (!s.unsubscribeToken) {
+      s.unsubscribeToken = crypto.randomBytes(20).toString('hex');
+      await s.save();
+    }
+    
+    const unsubscribeUrl = `${clientUrl}/unsubscribe/${s.unsubscribeToken}`;
+    personalizations.push({
+      to: [{ email: s.email }],
+      substitutions: {
+        '-unsubscribeUrl-': unsubscribeUrl
+      }
+    });
+  }
+  
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>${post.title}</h2>
+      ${post.bannerImage ? `<img src="${post.bannerImage}" alt="${post.title}" style="width: 100%; max-height: 300px; object-fit: cover; margin-bottom: 20px;" />` : ''}
+      <p style="font-size: 16px; line-height: 1.5; color: #333;">${post.excerpt || 'Read our latest post on WalletPickle.'}</p>
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${postUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Read Full Post</a>
+      </div>
+      <p style="font-size: 12px; color: #999; text-align: center; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+        Don't want these emails? <a href="-unsubscribeUrl-" style="color: #999; text-decoration: underline;">Unsubscribe</a>
+      </p>
+    </div>
+  `;
+
+  await sendEmail({
+    personalizations,
+    from: process.env.NEWSLETTER_FROM_EMAIL || process.env.SENDGRID_FROM_EMAIL,
+    subject: post.title,
+    html,
+  });
+
+  res.status(200).json({ success: true, message: `Newsletter sent to ${subscribers.length} subscribers` });
 });

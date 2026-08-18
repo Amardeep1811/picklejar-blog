@@ -14,5 +14,10 @@ router.route('/:id')
   .put(protect, role(['admin', 'editor']), validate(postSchema), updatePost)
   .delete(protect, role(['admin', 'editor']), deletePost);
 
+router.route('/:id/send-newsletter').post(protect, role(['admin', 'editor']), (async (req, res, next) => {
+  const { sendNewsletter } = await import('../controllers/postController.js');
+  sendNewsletter(req, res, next);
+}));
+
 
 export default router;

@@ -1,7 +1,7 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 const router = express.Router();
-import { subscribe, getSubscribers } from '../controllers/subscriberController.js';
+import { subscribe, getSubscribers, deleteSubscriber, unsubscribe } from '../controllers/subscriberController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import role from '../middleware/roleMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
@@ -15,5 +15,7 @@ const subscriberLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+router.route('/unsubscribe/:token').get(unsubscribe);
 router.route('/').post(subscriberLimiter, validate(subscriberSchema), subscribe).get(protect, role(['admin']), getSubscribers);
+router.route('/:id').delete(protect, role(['admin']), deleteSubscriber);
 export default router;

@@ -24,6 +24,7 @@ export default function ManagePosts() {
     bannerImage: '',
     status: 'draft',
     editorsPick: false,
+    sendNewsletter: false,
     body: { blocks: [] }
   };
 
@@ -77,6 +78,7 @@ export default function ManagePosts() {
           bannerImage: fullPost.bannerImage || '',
           status: fullPost.status,
           editorsPick: fullPost.editorsPick || false,
+          sendNewsletter: false,
           body: fullPost.body || { blocks: [] }
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -119,20 +121,33 @@ export default function ManagePosts() {
         body: bodyData
       };
 
+      let savedPostId = null;
+
       if (editingId) {
         const res = await axios.put(`/posts/${editingId}`, postPayload);
         if (res.data.success) {
-          alert('Post updated successfully!');
-          handleCancel();
-          fetchInitialData();
+          savedPostId = editingId;
         }
       } else {
         const res = await axios.post('/posts', postPayload);
         if (res.data.success) {
-          alert('Post created successfully!');
-          handleCancel();
-          fetchInitialData();
+          savedPostId = res.data.data._id;
         }
+      }
+
+      if (savedPostId) {
+        if (formData.sendNewsletter) {
+          try {
+            const nlRes = await axios.post(`/posts/${savedPostId}/send-newsletter`);
+            alert(`Post saved! Newsletter status: ${nlRes.data.message}`);
+          } catch (nlErr) {
+            alert(`Post saved, but failed to send newsletter: ${nlErr.response?.data?.message || 'Unknown error'}`);
+          }
+        } else {
+          alert('Post saved successfully!');
+        }
+        handleCancel();
+        fetchInitialData();
       }
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to save post');
@@ -206,17 +221,32 @@ export default function ManagePosts() {
               </select>
             </div>
             
-            <div className="col-span-2 flex items-center mt-2">
-              <input
-                type="checkbox"
-                id="editorsPick"
-                checked={formData.editorsPick}
-                onChange={e => setFormData({...formData, editorsPick: e.target.checked})}
-                className="w-4 h-4 text-[var(--green)] bg-white border-[var(--line)] rounded focus:ring-[var(--green)] accent-[var(--green)]"
-              />
-              <label htmlFor="editorsPick" className="ml-2 text-sm font-semibold text-[var(--ink-2)] cursor-pointer">
-                Editor's Pick (Display in Sidebar)
-              </label>
+            <div className="col-span-2 flex flex-col gap-3 mt-2">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="editorsPick"
+                  checked={formData.editorsPick}
+                  onChange={e => setFormData({...formData, editorsPick: e.target.checked})}
+                  className="w-4 h-4 text-[var(--green)] bg-white border-[var(--line)] rounded focus:ring-[var(--green)] accent-[var(--green)]"
+                />
+                <label htmlFor="editorsPick" className="ml-2 text-sm font-semibold text-[var(--ink-2)] cursor-pointer">
+                  Editor's Pick (Display in Sidebar)
+                </label>
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="sendNewsletter"
+                  checked={formData.sendNewsletter}
+                  onChange={e => setFormData({...formData, sendNewsletter: e.target.checked})}
+                  className="w-4 h-4 text-[var(--green)] bg-white border-[var(--line)] rounded focus:ring-[var(--green)] accent-[var(--green)]"
+                />
+                <label htmlFor="sendNewsletter" className="ml-2 text-sm font-semibold text-[var(--ink-2)] cursor-pointer">
+                  Send Newsletter (Trigger email to all subscribers on save)
+                </label>
+              </div>
             </div>
           </div>
 

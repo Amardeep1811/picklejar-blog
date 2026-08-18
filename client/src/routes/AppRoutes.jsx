@@ -5,6 +5,7 @@ import HomePage from '../pages/HomePage';
 import VerticalPage from '../pages/VerticalPage';
 import PostPage from '../pages/PostPage';
 import SearchPage from '../pages/SearchPage';
+import Unsubscribe from '../pages/Unsubscribe';
 import ProtectedRoute from './ProtectedRoute';
 import PublicLayout from '../components/layout/PublicLayout';
 import AdminLayout from '../components/layout/AdminLayout';
@@ -17,6 +18,7 @@ const ManagePetitions = lazy(() => import('../pages/admin/ManagePetitions'));
 const ManageAds = lazy(() => import('../pages/admin/ManageAds'));
 const ManagePostAds = lazy(() => import('../pages/admin/ManagePostAds'));
 const ManageUsers = lazy(() => import('../pages/admin/ManageUsers'));
+const ManageSubscribers = lazy(() => import('../pages/admin/ManageSubscribers'));
 const ForgotPassword = lazy(() => import('../pages/admin/ForgotPassword'));
 const ResetPassword = lazy(() => import('../pages/admin/ResetPassword'));
 
@@ -42,6 +44,7 @@ export default function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/unsubscribe/:token" element={<Unsubscribe />} />
         <Route path="/:verticalSlug" element={<VerticalPage />} />
         <Route path="/:verticalSlug/:postSlug" element={<PostPage />} />
       </Route>
@@ -58,6 +61,7 @@ export default function AppRoutes() {
         <Route path="/admin/ads" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManageAds /></Suspense></ProtectedRoute>} />
         <Route path="/admin/post-ads" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManagePostAds /></Suspense></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManageUsers /></Suspense></ProtectedRoute>} />
+        <Route path="/admin/subscribers" element={<ProtectedRoute><Suspense fallback={<div>Loading...</div>}><ManageSubscribers /></Suspense></ProtectedRoute>} />
       </Route>
     </Routes>
   );

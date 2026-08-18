@@ -41,6 +41,7 @@ export default function AdminDashboard() {
     { title: 'Manage Ads', path: '/admin/ads', description: 'Configure banner and sponsored placements' },
     { title: 'Manage Post Ads', path: '/admin/post-ads', description: 'Assign specific ads to individual posts' },
     { title: 'Manage Users', path: '/admin/users', description: 'Control access and roles' },
+    { title: 'Manage Subscribers', path: '/admin/subscribers', description: 'View and manage newsletter subscribers' },
   ];
 
   // Filter links for editors to only see Posts

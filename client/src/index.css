@@ -44,3 +44,14 @@
     font-family: var(--font-heading);
   }
 }
+
+/* Editor.js overrides: force toolbar and actions to be visible by default on the active block */
+.ce-toolbar__actions {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.ce-toolbar {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
