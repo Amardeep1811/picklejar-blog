@@ -19,6 +19,7 @@ import subscriberRoutes from './routes/subscriberRoutes.js';
 import petitionRoutes from './routes/petitionRoutes.js';
 import trendingRoutes from './routes/trendingRoutes.js';
 import homeRoutes from './routes/homeRoutes.js';
+import marketRoutes from './routes/marketRoutes.js';
 import sitemapRoutes from './routes/sitemapRoutes.js';
 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';

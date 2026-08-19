@@ -31,53 +31,70 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100 p-4">
-      <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-700">
-        <h1 className="text-3xl font-bold text-center mb-4">Forgot Password</h1>
-        <p className="text-gray-400 text-center mb-8">Enter your email and we'll send you a link to reset your password.</p>
-        
-        {message && (
-          <div className="bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded mb-6 text-center">
-            {message}
-          </div>
-        )}
+    <div className="min-h-screen flex bg-[var(--bg)] font-ui">
+      {/* Left Column - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[var(--bg-2)] border-r border-[var(--line)] flex-col items-center justify-center p-12">
+        <div className="w-full max-w-md">
+          {/* Placeholder for real image asset */}
+          <img src="https://via.placeholder.com/800x600.png?text=WalletPickle+Brand+Image" alt="WalletPickle Brand" className="w-full h-auto object-contain rounded-lg shadow-sm" />
+        </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center">
-            {error}
+      {/* Right Column - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          <div className="text-center lg:hidden mb-8">
+            <img src="https://via.placeholder.com/400x200.png?text=Brand" alt="WalletPickle" className="mx-auto h-16 w-auto object-contain" />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors"
-              placeholder="admin@example.com"
-            />
-          </div>
+          <h1 className="text-3xl font-bold text-center mb-4 font-heading text-[var(--ink)]">
+            Forgot Password
+          </h1>
+          <p className="text-[var(--gray)] text-center mb-8 font-medium">Enter your email and we'll send you a link to reset your password.</p>
           
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-4 rounded font-bold text-white transition-colors ${
-              loading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
-            }`}
-          >
-            {loading ? 'Sending...' : 'Send Reset Link'}
-          </button>
-        </form>
+          {message && (
+            <div className="bg-[var(--green)]/10 border border-[var(--green)] text-[var(--green-dark)] px-4 py-3 rounded mb-6 text-center text-sm font-bold">
+              {message}
+            </div>
+          )}
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => navigate('/admin/login')}
-            className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
-          >
-            Back to Login
-          </button>
+          {error && (
+            <div className="bg-[var(--bg-2)] border border-[var(--red)] text-[var(--red)] px-4 py-3 rounded mb-6 text-center text-sm font-medium">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5 bg-white p-8 rounded-xl shadow-sm border border-[var(--line)]">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-[var(--ink-2)]">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
+                placeholder="admin@example.com"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all transform hover:scale-[1.02] hover:shadow-md ${
+                loading ? 'bg-[var(--gray-2)] cursor-not-allowed' : 'bg-[var(--green)] hover:bg-[var(--green-dark)]'
+              }`}
+            >
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => navigate('/admin/login')}
+              className="text-sm font-bold text-[var(--gray)] hover:text-[var(--green)] transition-colors"
+            >
+              Back to Login
+            </button>
+          </div>
         </div>
       </div>
     </div>

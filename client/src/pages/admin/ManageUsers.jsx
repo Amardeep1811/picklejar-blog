@@ -16,6 +16,9 @@ export default function ManageUsers() {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   const defaultForm = {
     name: '',
@@ -248,14 +251,27 @@ export default function ManageUsers() {
               <div>
                 <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">Password</label>
                 <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
-                <input 
-                  type="password" 
-                  required={!editingId}
-                  minLength="8"
-                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
-                  value={formData.password} 
-                  onChange={e => setFormData({...formData, password: e.target.value})} 
-                />
+                <div className="relative">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    required={!editingId}
+                    minLength="8"
+                    className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-2.5 pr-10 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
+                    value={formData.password} 
+                    onChange={e => setFormData({...formData, password: e.target.value})} 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--gray-2)] hover:text-[var(--ink)] transition-colors"
+                  >
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -292,26 +308,52 @@ export default function ManageUsers() {
               <div>
                 <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">New Password</label>
                 <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
-                <input 
-                  type="password" 
-                  required
-                  minLength="8"
-                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
-                  value={newPassword} 
-                  onChange={e => setNewPassword(e.target.value)} 
-                />
+                <div className="relative">
+                  <input 
+                    type={showNewPassword ? "text" : "password"} 
+                    required
+                    minLength="8"
+                    className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-2.5 pr-10 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
+                    value={newPassword} 
+                    onChange={e => setNewPassword(e.target.value)} 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--gray-2)] hover:text-[var(--ink)] transition-colors"
+                  >
+                    {showNewPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-[var(--ink-2)]">Confirm New Password</label>
                 <p className="text-xs text-[var(--gray)] mb-2 font-medium">At least 8 chars, 1 uppercase, 1 lowercase, 1 special char</p>
-                <input 
-                  type="password" 
-                  required
-                  minLength="8"
-                  className="w-full bg-white border border-[var(--line)] rounded-lg p-2.5 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
-                  value={confirmNewPassword} 
-                  onChange={e => setConfirmNewPassword(e.target.value)} 
-                />
+                <div className="relative">
+                  <input 
+                    type={showConfirmNewPassword ? "text" : "password"} 
+                    required
+                    minLength="8"
+                    className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-2.5 pr-10 text-[var(--ink)] focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
+                    value={confirmNewPassword} 
+                    onChange={e => setConfirmNewPassword(e.target.value)} 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--gray-2)] hover:text-[var(--ink)] transition-colors"
+                  >
+                    {showConfirmNewPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           )}

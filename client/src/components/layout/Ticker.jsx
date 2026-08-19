@@ -28,8 +28,9 @@ export default function Ticker() {
             <span className="inline-flex items-center gap-2 opacity-90">&#8599; Loading market data...</span>
           ) : (
             tickerData.map((item, i) => (
-              <span key={`1-${i}`} className={`inline-flex items-center gap-2 opacity-90 ${item.up ? 'text-[#9fd39a]' : 'text-[#d39a9a]'}`}>
-                <span dangerouslySetInnerHTML={{ __html: item.up ? '&#8599;' : '&#8600;' }} /> {item.symbol} {item.change}
+              <span key={`1-${i}`} className={`inline-flex items-center gap-2 opacity-90 font-bold ${item.isStatic ? 'text-[#f2eee2] tracking-wider' : (item.up ? 'text-[#9fd39a]' : 'text-[#d39a9a]')}`}>
+                {!item.isStatic && <span dangerouslySetInnerHTML={{ __html: item.up ? '&#8599;' : '&#8600;' }} />} 
+                {item.symbol} {item.change && <span className="opacity-75 font-normal">{item.change}</span>}
               </span>
             ))
           )}
@@ -41,8 +42,9 @@ export default function Ticker() {
             <span className="inline-flex items-center gap-2 opacity-90">&#8599; Loading market data...</span>
           ) : (
             tickerData.map((item, i) => (
-              <span key={`2-${i}`} className={`inline-flex items-center gap-2 opacity-90 ${item.up ? 'text-[#9fd39a]' : 'text-[#d39a9a]'}`}>
-                <span dangerouslySetInnerHTML={{ __html: item.up ? '&#8599;' : '&#8600;' }} /> {item.symbol} {item.change}
+              <span key={`2-${i}`} className={`inline-flex items-center gap-2 opacity-90 font-bold ${item.isStatic ? 'text-[#f2eee2] tracking-wider' : (item.up ? 'text-[#9fd39a]' : 'text-[#d39a9a]')}`}>
+                {!item.isStatic && <span dangerouslySetInnerHTML={{ __html: item.up ? '&#8599;' : '&#8600;' }} />} 
+                {item.symbol} {item.change && <span className="opacity-75 font-normal">{item.change}</span>}
               </span>
             ))
           )}

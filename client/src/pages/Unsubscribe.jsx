@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { Helmet } from 'react-helmet-async';
@@ -8,8 +8,13 @@ export default function Unsubscribe() {
   const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
   const [message, setMessage] = useState('Processing your request...');
 
+  const hasFired = useRef(false);
+
   useEffect(() => {
+    if (hasFired.current) return;
+    
     const processUnsubscribe = async () => {
+      hasFired.current = true;
       try {
         const res = await axios.get(`/subscribers/unsubscribe/${token}`);
         if (res.data.success) {

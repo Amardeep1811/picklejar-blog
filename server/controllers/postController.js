@@ -229,6 +229,20 @@ export const updatePost = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: 'Post updated', data: updatedPost });
 });
 
+export const updateAdSlots = asyncHandler(async (req, res) => {
+  const post = await Post.findById(req.params.id);
+  if (!post) {
+    res.status(404);
+    throw new Error('Post not found');
+  }
+  
+  if (req.body.adSlot1 !== undefined) post.adSlot1 = req.body.adSlot1;
+  if (req.body.adSlot2 !== undefined) post.adSlot2 = req.body.adSlot2;
+  
+  const updatedPost = await post.save();
+  res.status(200).json({ success: true, message: 'Ad slots updated', data: updatedPost });
+});
+
 export const deletePost = asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post) {
@@ -315,44 +329,86 @@ export const sendNewsletter = asyncHandler(async (req, res) => {
   const clientUrl = process.env.CLIENT_URL || `${protocol}://${req.get('host').replace('5000', '5173')}`;
   const postUrl = `${clientUrl}/post/${post.slug}`;
   
-  const personalizations = [];
+  let bodyPreview = '';
+  if (post.body && Array.isArray(post.body.blocks)) {
+    const firstPara = post.body.blocks.find(b => b.type === 'paragraph');
+    if (firstPara && firstPara.data && firstPara.data.text) {
+      const plainText = firstPara.data.text.replace(/<[^>]*>?/gm, '');
+      bodyPreview = plainText.substring(0, 150) + (plainText.length > 150 ? '...' : '');
+    }
+  }
+
+  let bannerImageUrl = post.bannerImage 
+    ? (post.bannerImage.startsWith('http') ? post.bannerImage : `${clientUrl}${post.bannerImage}`)
+    : '';
+  
+  let originalBannerUrl = bannerImageUrl; // For logging/verification if needed
+  if (bannerImageUrl.includes('res.cloudinary.com')) {
+    // Cloudinary supports inserting /f_jpg/ right after /upload/ to force JPG conversion
+    bannerImageUrl = bannerImageUrl.replace('/upload/', '/upload/f_jpg/');
+  }
+
+  const htmlTemplate = `
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; background-color: #fcfbf9; padding: 40px 20px; color: #1a1a1a;">
+      
+      <!-- Masthead -->
+      <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #1f7a4d; padding-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1px;">
+          <span style="color: #1f7a4d;">Wallet</span><span style="color: #1a1a1a;">Pickle</span>
+        </h1>
+        <p style="margin: 8px 0 0 0; color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Your Personal Finance Newsletter</p>
+      </div>
+
+      <!-- Main Content Container -->
+      <div style="background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        
+        ${bannerImageUrl ? `<img src="${bannerImageUrl}" alt="${post.title}" style="width: 100%; height: auto; max-height: 350px; object-fit: cover; display: block; border-bottom: 1px solid #eee;" />` : ''}
+        
+        <div style="padding: 30px;">
+          <h2 style="color: #1a1a1a; font-size: 28px; line-height: 1.3; margin: 0 0 20px 0; font-weight: 800;">${post.title}</h2>
+          
+          ${post.excerpt ? `<p style="font-size: 18px; line-height: 1.6; color: #1f7a4d; font-weight: bold; margin: 0 0 20px 0;">${post.excerpt}</p>` : ''}
+          ${bodyPreview ? `<p style="font-size: 16px; line-height: 1.7; color: #4a4a4a; margin: 0 0 30px 0;">${bodyPreview}</p>` : ''}
+          
+          <div style="text-align: center; margin-top: 40px; margin-bottom: 10px;">
+            <a href="${postUrl}" style="background-color: #1f7a4d; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 18px; border: 1px solid #145938;">Read Full Article</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; margin-top: 40px; padding-top: 20px;">
+        <p style="font-size: 13px; color: #888; margin: 0 0 10px 0;">
+          You received this email because you're subscribed to WalletPickle.
+        </p>
+        <p style="font-size: 13px; color: #888; margin: 0;">
+          No longer want to receive these emails? <a href="-unsubscribeUrl-" style="color: #1f7a4d; text-decoration: underline; font-weight: bold;">Unsubscribe instantly</a>
+        </p>
+      </div>
+    </div>
+  `;
+
+  const messages = [];
   
   for (const s of subscribers) {
-    // Backfill token if missing
     if (!s.unsubscribeToken) {
+      const crypto = (await import('crypto')).default;
       s.unsubscribeToken = crypto.randomBytes(20).toString('hex');
       await s.save();
     }
     
     const unsubscribeUrl = `${clientUrl}/unsubscribe/${s.unsubscribeToken}`;
-    personalizations.push({
-      to: [{ email: s.email }],
-      substitutions: {
-        '-unsubscribeUrl-': unsubscribeUrl
-      }
+    const personalizedHtml = htmlTemplate.replace('-unsubscribeUrl-', unsubscribeUrl);
+    
+    messages.push({
+      to: s.email,
+      from: process.env.NEWSLETTER_FROM_EMAIL || process.env.SENDGRID_FROM_EMAIL,
+      subject: post.title,
+      html: personalizedHtml
     });
   }
   
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2>${post.title}</h2>
-      ${post.bannerImage ? `<img src="${post.bannerImage}" alt="${post.title}" style="width: 100%; max-height: 300px; object-fit: cover; margin-bottom: 20px;" />` : ''}
-      <p style="font-size: 16px; line-height: 1.5; color: #333;">${post.excerpt || 'Read our latest post on WalletPickle.'}</p>
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="${postUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Read Full Post</a>
-      </div>
-      <p style="font-size: 12px; color: #999; text-align: center; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
-        Don't want these emails? <a href="-unsubscribeUrl-" style="color: #999; text-decoration: underline;">Unsubscribe</a>
-      </p>
-    </div>
-  `;
-
-  await sendEmail({
-    personalizations,
-    from: process.env.NEWSLETTER_FROM_EMAIL || process.env.SENDGRID_FROM_EMAIL,
-    subject: post.title,
-    html,
-  });
+  await sendEmail({ rawMessages: messages });
 
   res.status(200).json({ success: true, message: `Newsletter sent to ${subscribers.length} subscribers` });
 });

@@ -55,7 +55,7 @@ export default function ManagePostAds() {
         adSlot1: adSlot1 || null,
         adSlot2: adSlot2 || null
       };
-      const res = await axios.put(`/posts/${postId}`, payload);
+      const res = await axios.patch(`/posts/${postId}/ad-slots`, payload);
       if (res.data.success) {
         // Update post in state
         setPosts(posts.map(p => p._id === postId ? { ...p, adSlot1: res.data.data.adSlot1, adSlot2: res.data.data.adSlot2 } : p));

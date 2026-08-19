@@ -24,7 +24,7 @@ export default function AdminLayout() {
           </span>
           <button
             onClick={logout}
-            className="text-sm font-bold text-[var(--gray)] hover:text-[var(--green)] transition-colors"
+            className="bg-[var(--red)] text-white px-4 py-2 rounded font-bold hover:opacity-90 transition-opacity text-sm"
           >
             Logout
           </button>

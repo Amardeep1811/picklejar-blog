@@ -32,7 +32,8 @@ export default function EditorJsRenderer({ blocks }) {
         switch (block.type) {
           case 'header': {
             const Tag = `h${block.data.level || 2}`;
-            return <Tag key={index} className="font-bold my-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.data.text) }} />;
+            const textContent = typeof block.data.text === 'string' ? block.data.text : (block.data.text?.content || String(block.data.text));
+            return <Tag key={index} className="font-bold my-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(textContent) }} />;
           }
           case 'paragraph':
             return <p key={index} className="my-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(block.data.text) }} />;
@@ -40,9 +41,10 @@ export default function EditorJsRenderer({ blocks }) {
             const ListTag = block.data.style === 'ordered' ? 'ol' : 'ul';
             return (
               <ListTag key={index} className={`my-4 ${block.data.style === 'ordered' ? 'list-decimal' : 'list-disc'} ml-6`}>
-                {block.data.items.map((item, i) => (
-                  <li key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(item) }} />
-                ))}
+                {block.data.items.map((item, i) => {
+                  const itemContent = typeof item === 'string' ? item : (item?.content || String(item));
+                  return <li key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(itemContent) }} />;
+                })}
               </ListTag>
             );
           }

@@ -19,5 +19,10 @@ router.route('/:id/send-newsletter').post(protect, role(['admin', 'editor']), (a
   sendNewsletter(req, res, next);
 }));
 
+router.route('/:id/ad-slots').patch(protect, role(['admin']), (async (req, res, next) => {
+  const { updateAdSlots } = await import('../controllers/postController.js');
+  updateAdSlots(req, res, next);
+}));
+
 
 export default router;

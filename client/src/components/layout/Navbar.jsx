@@ -10,6 +10,10 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState('idle');
+  const [subscribeMessage, setSubscribeMessage] = useState('');
   const navigate = useNavigate();
   const moreTimeoutRef = useRef(null);
 
@@ -33,8 +37,31 @@ export default function Navbar() {
     }
   };
 
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    setSubscribeStatus('loading');
+    try {
+      const res = await axios.post('/subscribers', { email });
+      if (res.data.success) {
+        setSubscribeStatus('success');
+        setSubscribeMessage('Thanks for subscribing!');
+        setTimeout(() => {
+          setIsSubscribeModalOpen(false);
+          setSubscribeStatus('idle');
+          setSubscribeMessage('');
+          setEmail('');
+        }, 3000);
+      }
+    } catch (err) {
+      setSubscribeStatus('error');
+      setSubscribeMessage(err.response?.data?.message || 'Something went wrong. Please try again.');
+    }
+  };
+
   useEffect(() => {
-    if (mobileMenuOpen) {
+    if (mobileMenuOpen || isSubscribeModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -42,7 +69,7 @@ export default function Navbar() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, isSubscribeModalOpen]);
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -154,7 +181,9 @@ export default function Navbar() {
                 </svg>
               )}
             </button>
-            <button className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 cursor-pointer font-semibold text-sm transition-colors" style={{ borderRadius: "3px" }}>
+            <button 
+              onClick={() => setIsSubscribeModalOpen(true)}
+              className="hidden sm:block bg-[var(--green)] hover:bg-[var(--green-dark)] text-white px-5 py-2 cursor-pointer font-semibold text-sm transition-colors" style={{ borderRadius: "3px" }}>
               Subscribe
             </button>
             <button
@@ -264,12 +293,74 @@ export default function Navbar() {
               </svg>
               <span>Search</span>
             </button>
-            <button className="bg-white text-[var(--green)] hover:bg-[var(--bg)] py-3 rounded-md cursor-pointer font-bold text-center transition-colors">
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsSubscribeModalOpen(true);
+              }}
+              className="bg-white text-[var(--green)] hover:bg-[var(--bg)] py-3 rounded-md cursor-pointer font-bold text-center transition-colors">
               Subscribe
             </button>
           </div>
         </div>
       </div>
+
+      {/* Subscribe Modal */}
+      {isSubscribeModalOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900">Join WalletPickle</h3>
+              <button 
+                onClick={() => setIsSubscribeModalOpen(false)}
+                className="text-gray-400 hover:text-gray-900 transition-colors p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-600 mb-6 text-sm font-medium">Get the latest personal finance tips and side hustle guides delivered straight to your inbox.</p>
+              
+              {subscribeStatus === 'success' ? (
+                <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg text-center font-bold">
+                  {subscribeMessage}
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="space-y-4">
+                  <div>
+                    <input 
+                      type="email" 
+                      placeholder="Your email address" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-[var(--green)] focus:ring-1 focus:ring-[var(--green)] transition-colors"
+                    />
+                  </div>
+                  
+                  {subscribeStatus === 'error' && (
+                    <div className="text-red-600 text-sm font-medium">{subscribeMessage}</div>
+                  )}
+                  
+                  <button 
+                    type="submit" 
+                    disabled={subscribeStatus === 'loading'}
+                    className="w-full bg-[var(--green)] hover:bg-[var(--green-dark)] text-white py-3 rounded-lg font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center disabled:opacity-70 disabled:hover:translate-y-0"
+                  >
+                    {subscribeStatus === 'loading' ? (
+                      <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : 'Subscribe Now'}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

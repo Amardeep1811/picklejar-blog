@@ -5,13 +5,11 @@ import axios from 'axios';
 // Default fallback data matching the old hardcoded ticker content
 const DEFAULT_TICKER_DATA = [
   { symbol: 'SPY', change: '+1.2%', up: true },
+  { symbol: 'MARKET UPDATES', change: 'LIVE', up: true, isStatic: true },
   { symbol: 'QQQ', change: '-0.4%', up: false },
+  { symbol: 'LATEST STORIES', change: 'NEW', up: true, isStatic: true },
   { symbol: 'BTC', change: '+5.7%', up: true },
-  { symbol: 'AAPL', change: '+2.1%', up: true },
-  { symbol: 'TSLA', change: '-1.8%', up: false },
-  { symbol: '10Y T-NOTE', change: '4.2%', up: true },
-  { symbol: 'GOLD', change: '+0.3%', up: true },
-  { symbol: 'OIL', change: '-2.1%', up: false },
+  { symbol: 'EXPERT ANALYSIS', change: 'READ', up: true, isStatic: true },
 ];
 
 export const getMarketTicker = asyncHandler(async (req, res) => {
@@ -53,8 +51,18 @@ export const getMarketTicker = asyncHandler(async (req, res) => {
       }
     }
 
-    // If all requests failed (or we got rate limited resulting in empty tickerData), fallback to default
-    const finalData = tickerData.length > 0 ? tickerData : DEFAULT_TICKER_DATA;
+    // If all requests failed, fallback to default
+    let finalData = DEFAULT_TICKER_DATA;
+    if (tickerData.length > 0) {
+      finalData = [
+        tickerData.find(t => t.symbol === 'SPY') || { symbol: 'SPY', change: '0.0%', up: true },
+        { symbol: 'MARKET UPDATES', change: 'LIVE', up: true, isStatic: true },
+        tickerData.find(t => t.symbol === 'QQQ') || { symbol: 'QQQ', change: '0.0%', up: true },
+        { symbol: 'LATEST STORIES', change: 'NEW', up: true, isStatic: true },
+        { symbol: '14 NEW POSTS TODAY', change: 'READ', up: true, isStatic: true },
+        { symbol: 'EXPERT ANALYSIS', change: 'DAILY', up: true, isStatic: true }
+      ];
+    }
     
     // Cache for 4 hours (14400 seconds) to heavily conserve API calls
     setCached(cacheKey, finalData, 14400);
