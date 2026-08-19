@@ -26,6 +26,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { initTrendingJob } from './jobs/trendingJob.js';
 import { initExpiredAdsJob } from './jobs/expiredAdsJob.js';
 import { initKeepAliveJob } from './jobs/keepAliveJob.js';
+import { initTickerRefreshJob } from './jobs/tickerRefreshJob.js';
 
 // Startup env check
 const requiredEnv = ['JWT_SECRET', 'MONGO_URI', 'CLIENT_URL', 'IP_SALT', 'SENDGRID_API_KEY', 'SENDGRID_FROM_EMAIL'];
@@ -135,4 +136,5 @@ app.listen(PORT, () => {
   initTrendingJob();
   initExpiredAdsJob();
   initKeepAliveJob();
+  initTickerRefreshJob();
 });
