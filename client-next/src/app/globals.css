@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-ticker: ticker 60s linear infinite;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@layer base {
+  :root {
+    --bg: #ffffff;
+    --bg-2: #f2eee2;
+    --ink: #14161d;
+    --ink-2: #1c1f28;
+    --green: #1f7a4d;
+    --green-dark: #185f3c;
+    --gold: #c8933f;
+    --tan: #dcd5bf;
+    --tan-dark: #cdc4a8;
+    --gray: #6f6b5e;
+    --gray-2: #8b8677;
+    --line: #d8d1bd;
+    --red: #c0392f;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Source Serif 4', serif;
+    --font-ui: 'Inter', sans-serif;
+  }
+
+  html, body {
+    background-color: var(--bg);
+    overscroll-behavior: none;
+  }
+
+  body {
+    color: var(--ink);
+    font-family: var(--font-ui);
+  }
+
+  /* font-family for headings handled via utility classes or we can apply it globally */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Editor.js overrides: force toolbar and actions to be visible by default on the active block */
+.ce-toolbar__actions {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.ce-toolbar {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
