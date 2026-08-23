@@ -25,7 +25,7 @@ export function middleware(request) {
     img-src 'self' data: https://res.cloudinary.com https://via.placeholder.com;
     font-src 'self' https://fonts.gstatic.com;
     frame-src 'none';
-    connect-src 'self' ${apiCspUrl};
+    connect-src 'self' ${apiCspUrl} https://api.cloudinary.com https://*.onrender.com https://*.sentry.io;
   `.replace(/\s{2,}/g, ' ').trim();
 
   const requestHeaders = new Headers(request.headers);
