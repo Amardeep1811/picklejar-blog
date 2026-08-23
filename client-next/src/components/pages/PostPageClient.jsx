@@ -22,12 +22,16 @@ export default function PostPageClient({ initialData, initialRelatedPosts, initi
   // Render bottom grid with up to 4 posts
   const morePosts = relatedPosts.slice(0, 4);
 
-  const formattedDate = new Date(data.publishDate || data.createdAt).toLocaleDateString('en-US', {
-    timeZone: 'UTC',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  const [formattedDate, setFormattedDate] = useState('');
+
+  useEffect(() => {
+    setFormattedDate(new Date(data.publishDate || data.createdAt).toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }));
+  }, [data.publishDate, data.createdAt]);
 
   const trimmedExcerpt = data.excerpt?.trim() || data.title;
 

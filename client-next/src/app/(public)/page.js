@@ -9,6 +9,20 @@ import SportsSection from '@/components/home/SportsSection';
 export const metadata = {
   title: 'WalletPickle',
   description: 'The latest stories, news, and trends.',
+  openGraph: {
+    title: 'WalletPickle',
+    description: 'The latest stories, news, and trends.',
+    url: '/',
+    images: [
+      {
+        url: 'https://walletpickle.com/logo.png', // Or the default brand image
+        width: 1200,
+        height: 630,
+        alt: 'WalletPickle',
+      }
+    ],
+    type: 'website',
+  },
 };
 
 const getHomeData = async () => {

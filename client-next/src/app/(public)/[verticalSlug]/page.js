@@ -37,6 +37,20 @@ export async function generateMetadata({ params }) {
   return {
     title: `${vertical.name} - WalletPickle`,
     description: `Read the latest stories about ${vertical.name} on WalletPickle.`,
+    openGraph: {
+      title: `${vertical.name} - WalletPickle`,
+      description: `Read the latest stories about ${vertical.name} on WalletPickle.`,
+      url: `/${vertical.slug}`,
+      images: [
+        {
+          url: 'https://walletpickle.com/logo.png',
+          width: 1200,
+          height: 630,
+          alt: `${vertical.name} - WalletPickle`,
+        }
+      ],
+      type: 'website',
+    },
   };
 }
 

@@ -17,6 +17,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://picklejar-blog-nksk.vercel.app'),
   title: "WalletPickle",
   description: "The best place for sports and finance news.",
 };
