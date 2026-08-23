@@ -5,6 +5,19 @@ export function middleware(request) {
   const isDev = process.env.NODE_ENV === 'development';
   const scriptSrc = isDev ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'` : `'self' 'nonce-${nonce}' 'strict-dynamic'`;
   
+  // Extract origin for CSP if a full URL is provided (to prevent path-matching blocks)
+  let apiCspUrl = '';
+  try {
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    if (rawApiUrl.startsWith('http')) {
+      apiCspUrl = new URL(rawApiUrl).origin;
+    } else {
+      apiCspUrl = rawApiUrl;
+    }
+  } catch (e) {
+    apiCspUrl = '';
+  }
+
   const csp = `
     default-src 'self';
     script-src ${scriptSrc};
@@ -12,7 +25,7 @@ export function middleware(request) {
     img-src 'self' data: https://res.cloudinary.com https://via.placeholder.com;
     font-src 'self' https://fonts.gstatic.com;
     frame-src 'none';
-    connect-src 'self' ${process.env.NEXT_PUBLIC_API_URL || ''};
+    connect-src 'self' ${apiCspUrl};
   `.replace(/\s{2,}/g, ' ').trim();
 
   const requestHeaders = new Headers(request.headers);
