@@ -33,6 +33,12 @@ export async function generateMetadata({ params }) {
         }
       ],
       type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${post.title} - WalletPickle`,
+      description: post.excerpt || `Read ${post.title} on WalletPickle`,
+      images: [post.bannerImage || 'https://walletpickle.com/logo.png'],
     }
   };
 }

@@ -9,6 +9,8 @@ export const getPetitions = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.active !== undefined) {
     filter.active = req.query.active === 'true';
+  } else {
+    filter.active = true;
   }
 
   let query = Petition.find(filter).sort({ createdAt: -1 });

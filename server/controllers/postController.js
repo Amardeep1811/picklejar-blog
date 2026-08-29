@@ -50,7 +50,7 @@ export const getPost = asyncHandler(async (req, res) => {
     if (cachedData) {
       // Still track views on cache hit
       const rawIp = req.ip || '';
-      const salt = process.env.IP_SALT || 'picklejar-ip-salt';
+      const salt = process.env.IP_SALT;
       const ipHash = crypto.createHmac('sha256', salt).update(rawIp).digest('hex');
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       PostView.findOne({ post: cachedData._id, ipHash, timestamp: { $gte: oneDayAgo } })
