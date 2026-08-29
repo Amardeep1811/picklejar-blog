@@ -16,8 +16,10 @@ const sourceSerif = Source_Serif_4({
   variable: "--font-body",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export const metadata = {
-  metadataBase: new URL('https://picklejar-blog-nksk.vercel.app'),
+  metadataBase: new URL(siteUrl),
   title: "WalletPickle",
   description: "The best place for sports and finance news.",
 };

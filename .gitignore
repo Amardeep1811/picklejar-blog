@@ -37,3 +37,5 @@ fetchLatest.js
 *.sln
 *.sw?
 recurring-bug-pattern.md
+
+DEPLOY.md

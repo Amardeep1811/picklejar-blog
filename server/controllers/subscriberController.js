@@ -15,7 +15,11 @@ export const subscribe = asyncHandler(async (req, res) => {
   }
   const unsubscribeToken = crypto.randomBytes(20).toString('hex');
   const subscriber = await Subscriber.create({ email, unsubscribeToken });
-  res.status(201).json({ success: true, message: 'Subscribed successfully', data: subscriber });
+  res.status(201).json({ 
+    success: true, 
+    message: 'Subscribed successfully', 
+    data: { email: subscriber.email, subscribedAt: subscriber.createdAt } 
+  });
 });
 
 export const unsubscribe = asyncHandler(async (req, res) => {

@@ -311,7 +311,7 @@ export const searchPosts = asyncHandler(async (req, res) => {
 });
 
 export const sendNewsletter = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findById(req.params.id).populate('vertical', 'name slug');
   if (!post) {
     res.status(404);
     throw new Error('Post not found');
@@ -327,7 +327,19 @@ export const sendNewsletter = asyncHandler(async (req, res) => {
   const sendEmail = (await import('../utils/sendEmail.js')).default;
   const protocol = req.protocol === 'http' && req.get('host').includes('localhost') ? 'http' : 'https';
   const clientUrl = process.env.CLIENT_URL || `${protocol}://${req.get('host').replace('5000', '5173')}`;
-  const postUrl = `${clientUrl}/post/${post.slug}`;
+  
+  const vSlug = post.vertical?.slug;
+  if (!vSlug) {
+    return res.status(400).json({ success: false, message: 'Post must belong to a vertical to be sent in newsletter' });
+  }
+  const postUrl = `${clientUrl}/${vSlug}/${post.slug}`;
+  
+  const escapeHtml = (s = '') =>
+    String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   
   let bodyPreview = '';
   if (post.body && Array.isArray(post.body.blocks)) {
@@ -365,10 +377,10 @@ export const sendNewsletter = asyncHandler(async (req, res) => {
         ${bannerImageUrl ? `<img src="${bannerImageUrl}" alt="${post.title}" style="width: 100%; height: auto; max-height: 350px; object-fit: cover; display: block; border-bottom: 1px solid #eee;" />` : ''}
         
         <div style="padding: 30px;">
-          <h2 style="color: #1a1a1a; font-size: 28px; line-height: 1.3; margin: 0 0 20px 0; font-weight: 800;">${post.title}</h2>
+          <h2 style="color: #1a1a1a; font-size: 28px; line-height: 1.3; margin: 0 0 20px 0; font-weight: 800;">${escapeHtml(post.title)}</h2>
           
-          ${post.excerpt ? `<p style="font-size: 18px; line-height: 1.6; color: #1f7a4d; font-weight: bold; margin: 0 0 20px 0;">${post.excerpt}</p>` : ''}
-          ${bodyPreview ? `<p style="font-size: 16px; line-height: 1.7; color: #4a4a4a; margin: 0 0 30px 0;">${bodyPreview}</p>` : ''}
+          ${post.excerpt ? `<p style="font-size: 18px; line-height: 1.6; color: #1f7a4d; font-weight: bold; margin: 0 0 20px 0;">${escapeHtml(post.excerpt)}</p>` : ''}
+          ${bodyPreview ? `<p style="font-size: 16px; line-height: 1.7; color: #4a4a4a; margin: 0 0 30px 0;">${escapeHtml(bodyPreview)}</p>` : ''}
           
           <div style="text-align: center; margin-top: 40px; margin-bottom: 10px;">
             <a href="${postUrl}" style="background-color: #1f7a4d; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 18px; border: 1px solid #145938;">Read Full Article</a>

@@ -1,5 +1,5 @@
 export default async function sitemap() {
-  const baseUrl = 'https://walletpickle.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   
   const routes = [
     {
