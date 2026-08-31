@@ -48,6 +48,10 @@ export function middleware(request) {
     if (!token) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
+
+    if (pathname === '/admin') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
   }
 
   return response;

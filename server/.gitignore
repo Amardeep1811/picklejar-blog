@@ -1,4 +1,3 @@
-.env.example
 node_modules
 check_db_data.js
 check_indexes.js
